@@ -9,27 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-label": "^2.1.3",
     "@radix-ui/react-slot": "^1.2.0",
->>>>>>> e3a95d45308e683e32bb788d46d02e6330774b68
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.487.0",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
-    "tailwind-merge": "^3.2.0",
-    "tw-animate-css": "^1.2.5"
-=======
     "react-hook-form": "^7.55.0",
     "tailwind-merge": "^3.2.0",
     "tw-animate-css": "^1.2.5",
     "zod": "^3.24.2"
->>>>>>> e3a95d45308e683e32bb788d46d02e6330774b68
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -3045,10 +3045,7 @@ __metadata:
     next: "npm:15.3.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
-<<<<<<< HEAD
-=======
     react-hook-form: "npm:^7.55.0"
->>>>>>> e3a95d45308e683e32bb788d46d02e6330774b68
     tailwind-merge: "npm:^3.2.0"
     tailwindcss: "npm:^4"
     tw-animate-css: "npm:^1.2.5"

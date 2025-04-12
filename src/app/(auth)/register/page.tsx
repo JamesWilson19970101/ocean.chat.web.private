@@ -67,33 +67,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="relative flex w-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-5xl">
+    <div className="flex justify-center h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="relative flex w-full h-full overflow-hidden bg-white rounded-sm shadow-lg dark:bg-gray-800">
         {/* Left Side: Image and Text */}
         <div
           className="hidden lg:block lg:w-1/2 bg-cover bg-center"
           // IMPORTANT: Replace with your actual image path in the /public folder
-          style={{ backgroundImage: "url('/ocean-bg.jpg')" }}
+          style={{ backgroundImage: "url('/oc-960x1080.png')" }}
           // Fallback background color if the image fails to load
           // You can adjust the color to better match your image
           onError={(e) => (e.currentTarget.style.backgroundColor = "#60a5fa")} // Example blue fallback
         >
-          <div className="flex items-center justify-center h-full px-20 bg-gray-900 bg-opacity-40">
-            <div>
-              {/* You can add the moon image here if desired */}
-              {/* <img src="/path/to/moon.png" alt="Moon" className="w-24 h-24 mx-auto mb-4" /> */}
-              <h2 className="text-4xl font-bold text-white text-center font-sans">
-                ocean
-              </h2>
-              {/* Add the silhouette here if you have it as an image or SVG */}
-              {/* <img src="/path/to/silhouette.png" alt="Silhouette" className="mx-auto mt-8" /> */}
-            </div>
-          </div>
         </div>
 
         {/* Right Side: Registration Form */}
-        <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
-          <Card className="border-0 shadow-none">
+        <div className="w-full flex overflow-y-auto px-6 py-8 md:px-8 lg:w-1/2 bg-gradient-to-b from-[#397DEA] to-[rgba(83,147,245,0)]">
+          <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
             {" "}
             {/* Remove card border/shadow */}
             <CardHeader className="text-center">
