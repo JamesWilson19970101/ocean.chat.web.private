@@ -3,6 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -17,14 +18,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import somebody from "../../../../public/somebody.webp";
+import moon from "../../../../public/moon.webp";
+import cloud from "../../../../public/cloud.webp";
 
 // Define the validation schema using Zod
 const formSchema = z
@@ -70,28 +67,59 @@ export default function RegisterPage() {
     <div className="flex justify-center h-screen bg-gray-100 dark:bg-gray-900">
       <div className="relative flex w-full h-full overflow-hidden bg-white rounded-sm shadow-lg dark:bg-gray-800">
         {/* Left Side: Image and Text */}
-        <div
-          className="hidden lg:block lg:w-1/2 bg-cover bg-center"
-          // IMPORTANT: Replace with your actual image path in the /public folder
-          style={{ backgroundImage: "url('/oc-960x1080.png')" }}
-          // Fallback background color if the image fails to load
-          // You can adjust the color to better match your image
-          onError={(e) => (e.currentTarget.style.backgroundColor = "#60a5fa")} // Example blue fallback
-        >
-        </div>
+        <div className="hidden lg:block w-full relative px-6 py-8 md:px-8 lg:w-1/2 bg-gradient-to-b from-[#397DEA] to-[rgba(83,147,245,0)]">
+          {/* Aligns the image container to the bottom right */}
+          <Image
+            src={moon} // Path relative to the /public directory
+            alt="moon"
+            width={204} // Specify width (adjust as needed)
+            height={202} // Specify height (adjust as needed)
+            className="absolute left-1/2 -translate-x-1/2 top-8 object-contain" // Adjust object-fit as needed
+            priority // Optional: Prioritize loading if it's LCP
+            onError={(e) => {
+              // Optional: Handle image loading errors (e.g., show a placeholder)
+              e.currentTarget.style.display = "none"; // Hide if error
+              console.error("Failed to load image: /moon.webp");
+            }}
+          />
 
+          <Image
+            src={cloud} // Path relative to the /public directory
+            alt="cloud"
+            width={540} // Specify width (adjust as needed)
+            height={236} // Specify height (adjust as needed)
+            className="absolute left-8 top-64 object-contain" // Adjust object-fit as needed
+            priority // Optional: Prioritize loading if it's LCP
+            onError={(e) => {
+              // Optional: Handle image loading errors (e.g., show a placeholder)
+              e.currentTarget.style.display = "none"; // Hide if error
+              console.error("Failed to load image: /cloud.webp");
+            }}
+          />
+
+          <Image
+            src={somebody} // Path relative to the /public directory
+            alt="somebody"
+            width={67.5} // Specify width (adjust as needed)
+            height={221.5} // Specify height (adjust as needed)
+            className="absolute bottom-8 right-8 object-contain" // Adjust object-fit as needed
+            priority // Optional: Prioritize loading if it's LCP
+            onError={(e) => {
+              // Optional: Handle image loading errors (e.g., show a placeholder)
+              e.currentTarget.style.display = "none"; // Hide if error
+              console.error("Failed to load image: /somebody.webp");
+            }}
+          />
+        </div>
         {/* Right Side: Registration Form */}
         <div className="w-full flex overflow-y-auto px-6 py-8 md:px-8 lg:w-1/2 bg-gradient-to-b from-[#397DEA] to-[rgba(83,147,245,0)]">
           <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
             {" "}
             {/* Remove card border/shadow */}
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white">
+              <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
                 Register your account
               </CardTitle>
-              <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-                Create an account to start chatting
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -104,19 +132,24 @@ export default function RegisterPage() {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-600 dark:text-gray-200">
+                      <FormItem className="flex flex-col items-end">
+                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
                           Email
                         </FormLabel>
                         <FormControl>
                           <Input
+                            {...form.register("email")}
                             placeholder="Please enter your email"
                             type="email"
                             {...field}
-                            className="w-full px-4 py-2 text-gray-700 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
                           />
                         </FormControl>
-                        <FormMessage /> {/* Displays validation errors */}
+                        <FormMessage className="text-xs text-red-400 mt-1 self-start">
+                          {form.formState.errors.email?.message || " "}
+                        </FormMessage>
+
+                        {/* Displays validation errors */}
                       </FormItem>
                     )}
                   />
@@ -126,8 +159,8 @@ export default function RegisterPage() {
                     control={form.control}
                     name="password"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-600 dark:text-gray-200">
+                      <FormItem className="flex flex-col items-end">
+                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
                           Password
                         </FormLabel>
                         <FormControl>
@@ -135,10 +168,10 @@ export default function RegisterPage() {
                             placeholder="Please enter your password"
                             type="password"
                             {...field}
-                            className="w-full px-4 py-2 text-gray-700 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-xs text-red-400 mt-1 self-start" />
                       </FormItem>
                     )}
                   />
@@ -148,8 +181,8 @@ export default function RegisterPage() {
                     control={form.control}
                     name="confirmPassword"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-600 dark:text-gray-200">
+                      <FormItem className="flex flex-col items-end">
+                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
                           Confirm Password
                         </FormLabel>
                         <FormControl>
@@ -157,35 +190,36 @@ export default function RegisterPage() {
                             placeholder="Confirm your password"
                             type="password"
                             {...field}
-                            className="w-full px-4 py-2 text-gray-700 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-xs text-red-400 mt-1 self-start" />
                       </FormItem>
                     )}
                   />
 
                   {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-                  >
-                    Submit
-                  </Button>
+                  <div className="flex items-center justify-between pt-4">
+                    {" "}
+                    {/* Added padding-top */}
+                    <Link
+                      href="/login"
+                      className="text-sm text-gray-1000 dark:text-gray-200 hover:underline"
+                    >
+                      Already Registered?
+                    </Link>
+                    {/* Submit Button - Styled */}
+                    <Button
+                      type="submit"
+                      // Updated Button styles
+                      className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
+                    >
+                      Submit
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </CardContent>
-            <CardFooter className="flex justify-center mt-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Already Registered?{" "}
-                <Link
-                  href="/login"
-                  className="text-blue-500 hover:underline dark:text-blue-400"
-                >
-                  Login
-                </Link>
-              </p>
-            </CardFooter>
           </Card>
         </div>
       </div>
