@@ -1,13 +1,13 @@
 // /app/(auth)/register/page.tsx
-"use client"; // This directive indicates it's a Client Component
+'use client'; // This directive indicates it's a Client Component
 
-import React from "react";
-import Link from "next/link";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import React from 'react';
+import Link from 'next/link';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,24 +15,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Define the validation schema using Zod
 const formSchema = z
   .object({
     email: z.string().email({
-      message: "Please enter a valid email address.",
+      message: 'Please enter a valid email address.',
     }),
     password: z.string().min(6, {
-      message: "Password must be at least 6 characters.",
+      message: 'Password must be at least 6 characters.',
     }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match.",
-    path: ["confirmPassword"], // Point the error to the confirmPassword field
+    path: ['confirmPassword'], // Point the error to the confirmPassword field
   });
 
 // Define the type for the form values based on the schema
@@ -43,9 +43,9 @@ export default function RegisterPage() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -54,14 +54,14 @@ export default function RegisterPage() {
     // Do something with the form values.
     // This is where you would typically send the data to your API endpoint (/api/auth/register)
     // Example: console.log(values);
-    console.log("Form submitted with values:", values);
+    console.log('Form submitted with values:', values);
     // Add your API call logic here
     // e.g., fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(values) })
   }
 
   return (
     <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
-      {" "}
+      {' '}
       {/* Remove card border/shadow */}
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
@@ -86,7 +86,7 @@ export default function RegisterPage() {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      {...form.register("email")}
+                      {...form.register('email')}
                       placeholder="Please enter your email"
                       type="email"
                       {...field}
@@ -94,7 +94,7 @@ export default function RegisterPage() {
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-400 mt-1 self-start">
-                    {form.formState.errors.email?.message || " "}
+                    {form.formState.errors.email?.message || ' '}
                   </FormMessage>
 
                   {/* Displays validation errors */}
@@ -148,7 +148,7 @@ export default function RegisterPage() {
 
             {/* Submit Button */}
             <div className="flex items-center justify-between pt-4">
-              {" "}
+              {' '}
               {/* Added padding-top */}
               <Link
                 href="/login"
