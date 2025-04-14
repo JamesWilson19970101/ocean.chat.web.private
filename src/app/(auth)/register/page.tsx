@@ -118,7 +118,7 @@ export default function RegisterPage() {
             {/* Remove card border/shadow */}
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
-                Register your account
+                Register
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -126,6 +126,7 @@ export default function RegisterPage() {
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-6"
+                  noValidate
                 >
                   {/* Email Field */}
                   <FormField
@@ -142,7 +143,7 @@ export default function RegisterPage() {
                             placeholder="Please enter your email"
                             type="email"
                             {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                           />
                         </FormControl>
                         <FormMessage className="text-xs text-red-400 mt-1 self-start">
@@ -168,7 +169,7 @@ export default function RegisterPage() {
                             placeholder="Please enter your password"
                             type="password"
                             {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                           />
                         </FormControl>
                         <FormMessage className="text-xs text-red-400 mt-1 self-start" />
@@ -190,7 +191,7 @@ export default function RegisterPage() {
                             placeholder="Confirm your password"
                             type="password"
                             {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder:text-gray-400"
+                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                           />
                         </FormControl>
                         <FormMessage className="text-xs text-red-400 mt-1 self-start" />
