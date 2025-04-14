@@ -3,7 +3,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -19,9 +18,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import somebody from "../../../../public/somebody.webp";
-import moon from "../../../../public/moon.webp";
-import cloud from "../../../../public/cloud.webp";
 
 // Define the validation schema using Zod
 const formSchema = z
@@ -64,166 +60,114 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex justify-center h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="relative flex w-full h-full overflow-hidden bg-white rounded-sm shadow-lg dark:bg-gray-800">
-        {/* Left Side: Image and Text */}
-        <div className="hidden lg:block w-full relative px-6 py-8 md:px-8 lg:w-1/2 bg-gradient-to-b from-[#397DEA] to-[rgba(83,147,245,0)]">
-          {/* Aligns the image container to the bottom right */}
-          <Image
-            src={moon} // Path relative to the /public directory
-            alt="moon"
-            width={204} // Specify width (adjust as needed)
-            height={202} // Specify height (adjust as needed)
-            className="absolute left-1/2 -translate-x-1/2 top-8 object-contain" // Adjust object-fit as needed
-            priority // Optional: Prioritize loading if it's LCP
-            onError={(e) => {
-              // Optional: Handle image loading errors (e.g., show a placeholder)
-              e.currentTarget.style.display = "none"; // Hide if error
-              console.error("Failed to load image: /moon.webp");
-            }}
-          />
+    <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
+      {" "}
+      {/* Remove card border/shadow */}
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
+          Register
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6"
+            noValidate
+          >
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-end">
+                  <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...form.register("email")}
+                      placeholder="Please enter your email"
+                      type="email"
+                      {...field}
+                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-400 mt-1 self-start">
+                    {form.formState.errors.email?.message || " "}
+                  </FormMessage>
 
-          <Image
-            src={cloud} // Path relative to the /public directory
-            alt="cloud"
-            width={540} // Specify width (adjust as needed)
-            height={236} // Specify height (adjust as needed)
-            className="absolute left-8 top-64 object-contain" // Adjust object-fit as needed
-            priority // Optional: Prioritize loading if it's LCP
-            onError={(e) => {
-              // Optional: Handle image loading errors (e.g., show a placeholder)
-              e.currentTarget.style.display = "none"; // Hide if error
-              console.error("Failed to load image: /cloud.webp");
-            }}
-          />
+                  {/* Displays validation errors */}
+                </FormItem>
+              )}
+            />
 
-          <Image
-            src={somebody} // Path relative to the /public directory
-            alt="somebody"
-            width={67.5} // Specify width (adjust as needed)
-            height={221.5} // Specify height (adjust as needed)
-            className="absolute bottom-8 right-8 object-contain" // Adjust object-fit as needed
-            priority // Optional: Prioritize loading if it's LCP
-            onError={(e) => {
-              // Optional: Handle image loading errors (e.g., show a placeholder)
-              e.currentTarget.style.display = "none"; // Hide if error
-              console.error("Failed to load image: /somebody.webp");
-            }}
-          />
-        </div>
-        {/* Right Side: Registration Form */}
-        <div className="w-full flex overflow-y-auto px-6 py-8 md:px-8 lg:w-1/2 bg-gradient-to-b from-[#397DEA] to-[rgba(83,147,245,0)]">
-          <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
-            {" "}
-            {/* Remove card border/shadow */}
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
-                Register
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                  noValidate
-                >
-                  {/* Email Field */}
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-end">
-                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
-                          Email
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...form.register("email")}
-                            placeholder="Please enter your email"
-                            type="email"
-                            {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs text-red-400 mt-1 self-start">
-                          {form.formState.errors.email?.message || " "}
-                        </FormMessage>
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-end">
+                  <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Please enter your password"
+                      type="password"
+                      {...field}
+                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-400 mt-1 self-start" />
+                </FormItem>
+              )}
+            />
 
-                        {/* Displays validation errors */}
-                      </FormItem>
-                    )}
-                  />
+            {/* Confirm Password Field */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-end">
+                  <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
+                    Confirm Password
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Confirm your password"
+                      type="password"
+                      {...field}
+                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-400 mt-1 self-start" />
+                </FormItem>
+              )}
+            />
 
-                  {/* Password Field */}
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-end">
-                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
-                          Password
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Please enter your password"
-                            type="password"
-                            {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs text-red-400 mt-1 self-start" />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Confirm Password Field */}
-                  <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-end">
-                        <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
-                          Confirm Password
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Confirm your password"
-                            type="password"
-                            {...field}
-                            className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs text-red-400 mt-1 self-start" />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Submit Button */}
-                  <div className="flex items-center justify-between pt-4">
-                    {" "}
-                    {/* Added padding-top */}
-                    <Link
-                      href="/login"
-                      className="text-sm text-gray-1000 dark:text-gray-200 hover:underline"
-                    >
-                      Already Registered?
-                    </Link>
-                    {/* Submit Button - Styled */}
-                    <Button
-                      type="submit"
-                      // Updated Button styles
-                      className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+            {/* Submit Button */}
+            <div className="flex items-center justify-between pt-4">
+              {" "}
+              {/* Added padding-top */}
+              <Link
+                href="/login"
+                className="text-sm text-gray-1000 dark:text-gray-200 hover:underline"
+              >
+                Already Registered?
+              </Link>
+              {/* Submit Button - Styled */}
+              <Button
+                type="submit"
+                // Updated Button styles
+                className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
+              >
+                Submit
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
