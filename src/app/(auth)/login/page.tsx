@@ -1,4 +1,3 @@
-// /app/(auth)/register/page.tsx
 'use client'; // This directive indicates it's a Client Component
 
 import React from 'react';
@@ -30,11 +29,11 @@ const formSchema = z.object({
 });
 
 // Define the type for the form values based on the schema
-type RegisterFormValues = z.infer<typeof formSchema>;
+type LoginFormValues = z.infer<typeof formSchema>;
 
-export default function RegisterPage() {
+export default function LoginPage() {
   // 1. Define your form.
-  const form = useForm<RegisterFormValues>({
+  const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -43,13 +42,11 @@ export default function RegisterPage() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: RegisterFormValues) {
+  function onSubmit(values: LoginFormValues) {
     // Do something with the form values.
     // This is where you would typically send the data to your API endpoint (/api/auth/register)
     // Example: console.log(values);
     console.log('Form submitted with values:', values);
-    // Add your API call logic here
-    // e.g., fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(values) })
   }
 
   return (
