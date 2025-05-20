@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Search, House, Frame, Clock3, Plus } from 'lucide-react';
-import ocean_chat from '../../../public/ocean_chat750x750.webp'; // Adjusted path relative to /app/chat/layout.tsx
+
+import { Header } from '@/components/chat/header';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 export default function ChatLayout({
   children,
@@ -15,18 +15,11 @@ export default function ChatLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <div className="p-3 flex items-center bg-gray-100">
-        <Image
-          src={ocean_chat}
-          alt="ocean chat"
-          width={30}
-          height={30}
-          className="rounded-full mr-3 object-cover"
-        />
-        <h1 className="text-xl font-semibold text-gray-800">Ocean Chat</h1>
-      </div>
-      <div className="flex h-screen bg-white dark:bg-gray-900 overflow-x-hidden">
+    <div className="h-screen flex flex-col">
+      {/* header */}
+      <Header />
+      {/* main content */}
+      <div className="flex-grow flex bg-white dark:bg-gray-900 overflow-x-hidden relative">
         {/* left sidebar - room list */}
         <aside
           className={cn(
@@ -34,7 +27,7 @@ export default function ChatLayout({
             'md:relative md:w-80 md:inset-auto',
           )}
         >
-          <div className='p-2 flex space-x-3 items-center'>
+          <div className="p-2 flex space-x-3 items-center">
             <Button
               variant="ghost"
               size="icon"
@@ -52,14 +45,17 @@ export default function ChatLayout({
               <Frame />
             </Button>
           </div>
-          <div className='p-2'>
-            <div className='relative flex items-center'>
-              <div className='flex items-center w-2/3 h-6 bg-gray-50 border border-gray-200 rounded-md'>
-                <Input type="search" placeholder="Search Room" className='flex-grow h-full bg-transparent border-none focus:ring-0 focus:outline-none pl-3 pr-1 text-sm text-gray-900 placeholder-gray-500'/>
+          <div className="p-2">
+            <div className="relative flex items-center">
+              <div className="flex items-center w-2/3 h-8 bg-gray-50 border border-gray-200 rounded-md">
+                <Input
+                  placeholder="Search Room"
+                  className="flex-grow h-full bg-transparent border-none shadow-none rounded-none focus:ring-0 focus-visible:ring-0 focus:outline-none pl-3 pr-1 text-sm text-gray-900 placeholder-gray-500"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-400 active:bg-white active:text-gray-300 h-full flex items-center justify-center px-2 focus:ring-0 focus:outline-none"
+                  className="text-gray-400 active:text-gray-300 h-full flex items-center justify-center px-2 focus:ring-0 focus:outline-none rounded-none hover:bg-transparent"
                   onClick={() => console.log('Search icon clicked')}
                 >
                   <Search />
