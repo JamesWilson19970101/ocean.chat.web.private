@@ -7668,6 +7668,7 @@ __metadata:
     eslint: "npm:^9"
     eslint-config-next: "npm:15.3.0"
     eslint-config-prettier: "npm:^10.1.2"
+    eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-prettier: "npm:^5.2.6"
     eslint-plugin-storybook: "npm:^0.12.0"
     identity-obj-proxy: "npm:^3.0.0"
