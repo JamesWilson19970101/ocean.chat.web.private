@@ -1,11 +1,13 @@
 // /app/(auth)/layout.tsx
 import React from 'react';
+
 import Image from 'next/image'; // Import Image component for layout images
+
 // Import images needed for the layout
 // Adjust paths if your layout file is located differently relative to /public
-import somebody from '../../../public/somebody.webp'; // Adjusted path relative to /app/(auth)/layout.tsx
-import moon from '../../../public/moon.webp'; // Adjusted path relative to /app/(auth)/layout.tsx
 import cloud from '../../../public/cloud.webp'; // Adjusted path relative to /app/(auth)/layout.tsx
+import moon from '../../../public/moon.webp'; // Adjusted path relative to /app/(auth)/layout.tsx
+import somebody from '../../../public/somebody.webp'; // Adjusted path relative to /app/(auth)/layout.tsx
 
 // Define the props type, expecting children which will be the page content
 interface AuthLayoutProps {
