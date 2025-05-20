@@ -8,7 +8,7 @@ import ocean_chat from '../../../public/ocean_chat750x750.webp';
 
 export function Header() {
   return (
-    <div className="p-3 flex items-center bg-gray-100">
+    <div className="p-3 flex items-center bg-gray-100 overflow-x-hidden">
       <Image
         src={ocean_chat}
         alt="ocean chat"

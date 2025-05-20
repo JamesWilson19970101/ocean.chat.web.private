@@ -5,8 +5,10 @@ import React from 'react';
 import { Search, House, Frame, Clock3, Plus } from 'lucide-react';
 
 import { Header } from '@/components/chat/header';
+import { RoomList } from '@/components/chat/room-list';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 export default function ChatLayout({
@@ -14,6 +16,34 @@ export default function ChatLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // mock Rooms data
+  const mockRooms = [
+    {
+      id: '1',
+      name: 'John Doe',
+      lastMessage: 'Was that designed by you?',
+      avatarUrl: '/avatars/john.png',
+      lastSeen: '2 hours ago',
+      active: false,
+    },
+    {
+      id: '2',
+      name: 'Altana Sunz',
+      lastMessage: 'Last seen 2 hours ago',
+      avatarUrl: '/avatars/altana.png',
+      lastSeen: '2 hours ago',
+      active: false,
+    },
+    {
+      id: '3',
+      name: 'Hugo Alias',
+      lastMessage: 'Last seen 2 hours ago',
+      avatarUrl: '/avatars/hugo.png',
+      lastSeen: '2 hours ago',
+      active: false,
+    },
+  ];
+
   return (
     <div className="h-screen flex flex-col">
       {/* header */}
@@ -81,6 +111,10 @@ export default function ChatLayout({
               </div>
             </div>
           </div>
+
+          <Separator />
+
+          <RoomList rooms={mockRooms} />
         </aside>
         {/* right - chat content */}
         <main
