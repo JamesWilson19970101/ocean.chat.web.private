@@ -1,4 +1,3 @@
-// /app/(auth)/register/page.tsx
 'use client'; // This directive indicates it's a Client Component
 
 import React from 'react';
@@ -61,7 +60,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="border-0 shadow-none w-full max-w-md mx-auto my-auto bg-transparent">
+    <Card className="border-0 shadow-none w-[clamp(280px,80vw,500px)] mx-auto my-auto bg-transparent">
       {' '}
       {/* Remove card border/shadow */}
       <CardHeader className="text-center">
@@ -91,7 +90,7 @@ export default function RegisterPage() {
                       placeholder="Please enter your email"
                       type="email"
                       {...field}
-                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                      className="w-full h-[clamp(40px,6vh,50px)] px-[clamp(1rem,3vw,1.5rem)] text-base text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-400 mt-1 self-start">
@@ -117,7 +116,7 @@ export default function RegisterPage() {
                       placeholder="Please enter your password"
                       type="password"
                       {...field}
-                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                      className="w-full h-[clamp(40px,6vh,50px)] px-[clamp(1rem,3vw,1.5rem)] text-base text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-400 mt-1 self-start" />
@@ -139,7 +138,7 @@ export default function RegisterPage() {
                       placeholder="Confirm your password"
                       type="password"
                       {...field}
-                      className="w-full px-6 py-3 text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
+                      className="w-full h-[clamp(40px,6vh,50px)] px-[clamp(1rem,3vw,1.5rem)] text-base text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-400 mt-1 self-start" />
@@ -161,7 +160,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 // Updated Button styles
-                className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
+                className="px-8 py-3 text-base font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
               >
                 Submit
               </Button>
