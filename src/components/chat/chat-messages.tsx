@@ -3,8 +3,9 @@
 import React, { useEffect, useRef } from 'react';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Message } from '@/types/chat';
 
-import { MessageItem, Message } from './message-item';
+import { MessageItem } from './message-item';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -22,11 +23,11 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 
   return (
     <ScrollArea
-      className="flex-1 p-4 lg:p-6 bg-gray-50 dark:bg-gray-850 overflow-y-auto"
+      className="flex-1 px-[20px] py-[30px] bg-transparent overflow-y-auto"
       ref={scrollAreaRef}
     >
       <div ref={viewportRef} className="h-full">
-        <div className="space-y-4">
+        <div className="space-y-[15px]">
           {messages.map((msg) => (
             <MessageItem key={msg.id} message={msg} />
           ))}
