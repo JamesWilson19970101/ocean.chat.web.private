@@ -2,23 +2,19 @@
 
 import React from 'react';
 
+import { useParams } from 'next/navigation';
+
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Room } from '@/types/chat';
 
 import { RoomListItem } from './room-list-item';
 
-interface Room {
-  id: string;
-  name: string;
-  lastMessage: string;
-  avatarUrl: string;
-  lastSeen: string;
-  active?: boolean; // currently selected room
-}
-
 export function RoomList({ rooms }: { rooms: Room[] }) {
+  const params = useParams();
+  
   return (
-    <ScrollArea className="flex-1 p-2">
-      <div className="space-y-1">
+    <ScrollArea className="flex-1 p-3">
+      <div className="space-y-2">
         {rooms.map((room) => (
           <RoomListItem
             key={room.id}
@@ -27,7 +23,9 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
             lastMessage={room.lastMessage}
             avatarUrl={room.avatarUrl}
             lastSeen={room.lastSeen}
-            isActive={room.active || false}
+            isActive={params.roomId === room.id || false}
+            unreadCount={room.unreadCount}
+            online={room.online}
           />
         ))}
       </div>
