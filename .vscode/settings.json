@@ -5,5 +5,8 @@
   },
   "eslint.nodePath": ".yarn/sdks",
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "snyk.advanced.autoSelectOrganization": true,
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+  "js/ts.tsdk.path": ".yarn/sdks/typescript/lib"
 }
