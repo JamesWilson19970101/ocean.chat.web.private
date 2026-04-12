@@ -1,56 +1,46 @@
-'use client';
-
 import React from 'react';
 
 import ChatHeader from '@/components/chat/chat-header';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessages } from '@/components/chat/chat-messages';
 import { Separator } from '@/components/ui/separator';
+import { getMockMessages, mockRooms } from '@/lib/mock-data';
 
-const mockMessages = [
-  {
-    id: 'm1',
-    sender: 'John Doe',
-    text: 'I can pass you the Figma link if you want',
-    timestamp: '10:00 AM',
-    isOwn: false,
-    avatarUrl: '/avatars/john.png',
-  },
-  {
-    id: 'm2',
-    sender: 'You',
-    text: 'Pass me the link so I can take a look',
-    timestamp: '10:01 AM',
-    isOwn: true,
-  },
-  {
-    id: 'm3',
-    sender: 'John Doe',
-    text: '[https://www.figma.com/file/oVUfBeeZdhdXmqQtLaKSZu/J.tree-Design?node-id=155%3A2858](https://www.figma.com/file/oVUfBeeZdhdXmqQtLaKSZu/J.tree-Design?node-id=155%3A2858)',
-    timestamp: '10:02 AM',
-    isOwn: false,
-    isLink: true,
-    avatarUrl: '/avatars/john.png',
-  },
-];
+interface ChatRoomProps {
+  params: Promise<{ roomId: string }>;
+}
 
-const currentChatUser = {
-  name: 'John Doe',
-  status: 'Last seen 2 hours ago',
-  avatarUrl: '/avatars/john.png',
-};
+export default async function ChatRoom({ params }: ChatRoomProps) {
+  const { roomId } = await params;
 
-export default function ChatRoom() {
+  // Simulate server-side fetch
+  const messages = getMockMessages(roomId);
+  const room = mockRooms.find((r) => r.id === roomId);
+
+  if (!room) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        Room not found
+      </div>
+    );
+  }
+
+  const currentChatUser = {
+    name: room.name,
+    status: room.online ? 'Online' : room.lastSeen,
+    avatarUrl: room.avatarUrl,
+  };
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-transparent">
       <ChatHeader
         userName={currentChatUser.name}
         userStatus={currentChatUser.status}
         avatarUrl={currentChatUser.avatarUrl}
       />
-      <Separator />
+      <Separator className="bg-black/5 dark:bg-white/10" />
 
-      <ChatMessages messages={mockMessages} />
+      <ChatMessages messages={messages} />
 
       <ChatInput />
     </div>
