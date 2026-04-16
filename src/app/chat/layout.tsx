@@ -29,7 +29,7 @@ export default async function ChatLayout({
           <SidebarHeader />
           <Separator className="bg-black/5 dark:bg-white/10" />
           <RoomList rooms={rooms} />
-          
+
           {/* app logo at bottom */}
           <div className="mt-auto shrink-0">
             <AppLogo />
@@ -44,10 +44,8 @@ export default async function ChatLayout({
         >
           {/* Subtle gradient overlay at the top (Mica effect matching) */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#F9F9F9] to-transparent pointer-events-none opacity-50 rounded-tl-[7px]" />
-          
-          <div className="relative flex flex-col h-full z-10">
-             {children}
-          </div>
+
+          <div className="relative flex flex-col h-full z-10">{children}</div>
         </main>
       </div>
     </div>
