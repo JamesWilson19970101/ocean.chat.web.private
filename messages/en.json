@@ -1,0 +1,32 @@
+{
+  "Auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "emailPlaceholder": "Please enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Please enter your password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "noAccount": "Do not have account?",
+    "alreadyRegistered": "Already Registered?",
+    "submit": "Submit",
+    "invalidEmail": "Please enter a valid email address.",
+    "passwordMinLength": "Password must be at least 6 characters.",
+    "passwordsDontMatch": "Passwords don't match."
+  },
+  "ChatRoom": {
+    "roomNotFound": "Room not found",
+    "online": "Online"
+  },
+  "DefaultChat": {
+    "welcome": "Welcome to Ocean Chat",
+    "description": "Select a conversation from the sidebar to start messaging. Or create a new room to connect with others."
+  },
+  "Chat": {
+    "attach": "Attach",
+    "typeMessagePlaceholder": "Type a message",
+    "searchRoomPlaceholder": "Search Room",
+    "userAvatar": "User Avatar"
+  }
+}

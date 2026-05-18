@@ -1,0 +1,32 @@
+{
+  "Auth": {
+    "login": "登录",
+    "register": "注册",
+    "email": "邮箱",
+    "emailPlaceholder": "请输入邮箱",
+    "password": "密码",
+    "passwordPlaceholder": "请输入密码",
+    "confirmPassword": "确认密码",
+    "confirmPasswordPlaceholder": "请确认你的密码",
+    "noAccount": "无账号？",
+    "alreadyRegistered": "已注册？",
+    "submit": "提交",
+    "invalidEmail": "请输入有效的邮箱账号",
+    "passwordMinLength": "密码不得少于6位",
+    "passwordsDontMatch": "密码不匹配"
+  },
+  "ChatRoom": {
+    "roomNotFound": "未找到聊天室",
+    "online": "在线"
+  },
+  "DefaultChat": {
+    "welcome": "欢迎使用 Ocean Chat",
+    "description": "从侧边栏选择一个对话开始聊天，或者创建一个新聊天室与他人交流。"
+  },
+  "Chat": {
+    "attach": "附件",
+    "typeMessagePlaceholder": "输入消息",
+    "searchRoomPlaceholder": "搜索聊天室",
+    "userAvatar": "用户头像"
+  }
+}
