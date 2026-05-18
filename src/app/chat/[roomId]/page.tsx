@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { getTranslations } from 'next-intl/server';
+
 import ChatHeader from '@/components/chat/chat-header';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessages } from '@/components/chat/chat-messages';
@@ -12,6 +14,7 @@ interface ChatRoomProps {
 
 export default async function ChatRoom({ params }: ChatRoomProps) {
   const { roomId } = await params;
+  const t = await getTranslations('ChatRoom');
 
   // Simulate server-side fetch
   const messages = getMockMessages(roomId);
@@ -20,14 +23,14 @@ export default async function ChatRoom({ params }: ChatRoomProps) {
   if (!room) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        Room not found
+        {t('roomNotFound')}
       </div>
     );
   }
 
   const currentChatUser = {
     name: room.name,
-    status: room.online ? 'Online' : room.lastSeen,
+    status: room.online ? t('online') : room.lastSeen,
     avatarUrl: room.avatarUrl,
   };
 

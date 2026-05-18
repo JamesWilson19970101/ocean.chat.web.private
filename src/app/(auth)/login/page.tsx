@@ -4,6 +4,7 @@ import React from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -19,21 +20,22 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-// Define the validation schema using Zod
-const formSchema = z.object({
-  email: z.string().email({
-    message: 'Please enter a valid email address.',
-  }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
-  }),
-});
-
-// Define the type for the form values based on the schema
-type LoginFormValues = z.infer<typeof formSchema>;
-
 export default function LoginPage() {
-  // 1. Define your form.
+  const t = useTranslations('Auth');
+
+  // Define the validation schema using Zod
+  const formSchema = z.object({
+    email: z.string().email({
+      message: t('invalidEmail'),
+    }),
+    password: z.string().min(6, {
+      message: t('passwordMinLength'),
+    }),
+  });
+
+  // Define the type for the form values based on the schema
+  type LoginFormValues = z.infer<typeof formSchema>;
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,7 +44,6 @@ export default function LoginPage() {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: LoginFormValues) {
     // Do something with the form values.
     // This is where you would typically send the data to your API endpoint (/api/auth/register)
@@ -56,7 +57,7 @@ export default function LoginPage() {
       {/* Remove card border/shadow */}
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-gray-700 dark:text-white md:text-[60px] md:leading-[84px] md:tracking-normal md:text-[#3E4772]">
-          Login
+          {t('login')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -73,12 +74,12 @@ export default function LoginPage() {
               render={({ field }) => (
                 <FormItem className="flex flex-col items-end">
                   <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
-                    Email
+                    {t('email')}
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...form.register('email')}
-                      placeholder="Please enter your email"
+                      placeholder={t('emailPlaceholder')}
                       type="email"
                       {...field}
                       className="w-full h-[clamp(40px,6vh,50px)] px-[clamp(1rem,3vw,1.5rem)] text-base text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
@@ -100,11 +101,11 @@ export default function LoginPage() {
               render={({ field }) => (
                 <FormItem className="flex flex-col items-end">
                   <FormLabel className="text-sm text-gray-100 dark:text-gray-300 mb-1 mr-1">
-                    Password
+                    {t('password')}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Please enter your password"
+                      placeholder={t('passwordPlaceholder')}
                       type="password"
                       {...field}
                       className="w-full h-[clamp(40px,6vh,50px)] px-[clamp(1rem,3vw,1.5rem)] text-base text-gray-900 bg-white rounded-full border-0 placeholder:text-gray-400"
@@ -123,7 +124,7 @@ export default function LoginPage() {
                 href="/register"
                 className="text-sm text-gray-1000 dark:text-gray-200 hover:underline"
               >
-                Do not have account?
+                {t('noAccount')}
               </Link>
               {/* Submit Button - Styled */}
               <Button
@@ -131,7 +132,7 @@ export default function LoginPage() {
                 // Updated Button styles
                 className="px-8 py-3 text-base font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-[#3E4772] rounded-full hover:bg-[#303858] focus:outline-none focus:ring focus:ring-[#3E4772] focus:ring-opacity-50"
               >
-                Submit
+                {t('submit')}
               </Button>
             </div>
           </form>

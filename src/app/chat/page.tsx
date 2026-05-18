@@ -1,8 +1,11 @@
 import React from 'react';
 
 import { MessageSquare } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function DefaultChatPage() {
+  const t = useTranslations('DefaultChat');
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50 dark:bg-gray-900/50">
       <div className="flex flex-col items-center text-center max-w-sm">
@@ -10,11 +13,10 @@ export default function DefaultChatPage() {
           <MessageSquare className="h-8 w-8 text-blue-600 dark:text-blue-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 tracking-tight">
-          Welcome to Ocean Chat
+          {t('welcome')}
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-          Select a conversation from the sidebar to start messaging. Or create a
-          new room to connect with others.
+          {t('description')}
         </p>
       </div>
     </div>

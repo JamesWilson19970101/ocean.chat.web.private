@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +20,8 @@ export function UserAvatar({
   fallbackText,
   className,
 }: UserAvatarProps) {
+  const t = useTranslations('Chat');
+
   const getInitials = (name?: string) => {
     if (!name) return 'U';
     const names = name.split(' ');
@@ -29,7 +33,7 @@ export function UserAvatar({
 
   return (
     <Avatar className={cn('h-10 w-10', className)}>
-      <AvatarImage src={src} alt={alt || 'User Avatar'} />
+      <AvatarImage src={src} alt={alt || t('userAvatar')} />
       <AvatarFallback>{fallbackText || getInitials(alt)}</AvatarFallback>
     </Avatar>
   );

@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 
 import { SendHorizonal, Smile, Paperclip, Mic, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export function ChatInput() {
   const [message, setMessage] = useState('');
+  const t = useTranslations('Chat');
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ export function ChatInput() {
         <div className="flex-1 relative flex items-center">
           <Input
             type="text"
-            placeholder="Type a message"
+            placeholder={t('typeMessagePlaceholder')}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="flex-1 bg-white dark:bg-gray-800 dark:text-gray-100 border border-black/5 dark:border-white/10 h-10 px-4 pr-12 rounded-[4px] focus-visible:ring-1 focus-visible:ring-blue-500/20 focus-visible:ring-offset-0 text-sm shadow-sm placeholder:text-gray-400"

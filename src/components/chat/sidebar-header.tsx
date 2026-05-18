@@ -3,11 +3,14 @@
 import React from 'react';
 
 import { Search, House, Frame, Clock3, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export function SidebarHeader() {
+  const t = useTranslations('Chat');
+
   return (
     <div className="flex flex-col">
       <div className="p-2 flex space-x-3 items-center">
@@ -15,7 +18,6 @@ export function SidebarHeader() {
           variant="ghost"
           size="icon"
           className="text-gray-400 active:bg-transparent active:text-gray-300 w-4 h-4 ml-3"
-
         >
           <House className="h-4 w-4" />
         </Button>
@@ -31,7 +33,7 @@ export function SidebarHeader() {
         <div className="relative flex items-center gap-2">
           <div className="flex items-center flex-1 h-8 bg-gray-50 border border-gray-200 rounded-md overflow-hidden">
             <Input
-              placeholder="Search Room"
+              placeholder={t('searchRoomPlaceholder')}
               className="flex-grow h-full bg-transparent border-none shadow-none rounded-none focus-visible:ring-0 px-3 text-sm text-gray-900 placeholder:text-gray-500"
             />
             <Button
