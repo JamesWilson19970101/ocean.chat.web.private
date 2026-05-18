@@ -44,3 +44,5 @@ next-env.d.ts
 git-worktree-spec.md
 
 storybook-static
+
+docs/*

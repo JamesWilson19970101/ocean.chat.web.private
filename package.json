@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 3000",
+    "dev": "next dev --turbopack --hostname 0.0.0.0 -p 1997",
     "build": "next build",
     "start": "next start",
     "lint": "eslint --fix .",
@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
     "next": "^16.2.4",
+    "next-intl": "^4.12.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hook-form": "^7.55.0",
