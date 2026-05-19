@@ -28,5 +28,14 @@
     "typeMessagePlaceholder": "Type a message",
     "searchRoomPlaceholder": "Search Room",
     "userAvatar": "User Avatar"
+  },
+  "Errors": {
+    "unexpected": "An unexpected error occurred",
+    "requestTimeout": "Request timeout",
+    "networkDisconnected": "Network disconnected",
+    "wsHandshakeTimeout": "WebSocket Handshake Timeout. Re-authentication required.",
+    "wsConnectionFailed": "Unable to connect to the chat server.",
+    "rateLimitExceeded": "Too many requests. Please try again later.",
+    "authError": "Authentication Error"
   }
 }
