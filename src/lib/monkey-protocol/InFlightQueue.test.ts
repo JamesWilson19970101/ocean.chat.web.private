@@ -15,6 +15,7 @@ describe('InFlightQueue (Pure Logic)', () => {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK,
       payload: new Uint8Array(),
+      length: 0,
       reqId: 101,
     };
     const promise = queue.enqueue(frameData, 101);
@@ -30,12 +31,14 @@ describe('InFlightQueue (Pure Logic)', () => {
     const frame1 = {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK,
+      length: 0,
       payload: new Uint8Array(),
       reqId: 1,
     };
     const frame2 = {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK,
+      length: 0,
       payload: new Uint8Array(),
       reqId: 2,
     };
@@ -59,12 +62,14 @@ describe('InFlightQueue (Pure Logic)', () => {
     const normalFrame = {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK,
+      length: 0,
       payload: new Uint8Array(),
       reqId: 1,
     };
     const volatileFrame = {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK | Flags.NO_RETRY,
+      length: 0,
       payload: new Uint8Array(),
       reqId: 2,
     };
@@ -85,6 +90,7 @@ describe('InFlightQueue (Pure Logic)', () => {
       {
         cmd: Cmd.MSG_UP,
         flags: Flags.REQUIRE_ACK,
+        length: 0,
         payload: new Uint8Array(),
         reqId: 1,
       },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { httpClient } from '@/services/http/client';
@@ -57,11 +58,15 @@ describe('SyncEngine (Pure Logic)', () => {
   it('should pull messages and process them via batch transaction', async () => {
     vi.mocked(localDB.getMaxLocalSyncSeqId).mockResolvedValue(1000);
 
-    const mockMessages = [{ client_msg_id: 'msg-1', sync_seq_id: 1001, content: 'Hello' }];
+    const mockMessages = [
+      { client_msg_id: 'msg-1', sync_seq_id: 1001, content: 'Hello' },
+    ];
     vi.mocked(httpClient.get).mockResolvedValue({ data: mockMessages });
 
     // Mock batch processor to return the same messages as "verified"
-    vi.mocked(localDB.processSyncMessagesBatch).mockResolvedValue(mockMessages as any);
+    vi.mocked(localDB.processSyncMessagesBatch).mockResolvedValue(
+      mockMessages as any,
+    );
 
     const onSyncComplete = vi.fn();
     engine.onSyncComplete = onSyncComplete;
