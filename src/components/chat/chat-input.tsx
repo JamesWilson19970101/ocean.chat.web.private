@@ -4,19 +4,70 @@ import React, { useState } from 'react';
 
 import { SendHorizonal, Smile, Paperclip, Mic, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { v7 as uuidv7 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Cmd, Flags, pb, getSocketManager } from '@/lib/monkey-protocol';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useChatStore } from '@/store/useChatStore';
 
-export function ChatInput() {
+interface ChatInputProps {
+  roomId: string;
+}
+
+export function ChatInput({ roomId }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const t = useTranslations('Chat');
+  const userId = useAuthStore((state) => state.userId);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      console.log('Sending message:', message);
+    if (message.trim() && userId) {
+      const text = message.trim();
       setMessage('');
+
+      const clientMsgId = uuidv7();
+
+      // 1. Optimistic UI
+      const newMsg = {
+        client_msg_id: clientMsgId,
+        sender_id: userId,
+        send_status: 'SENDING' as const,
+        created_at: Date.now(),
+        group_id: roomId,
+        msg_type: pb.oceanchat.monkey.MsgUp.MsgType.TEXT,
+        content: text,
+      };
+
+      await useChatStore.getState().addOptimisticMessage(newMsg);
+
+      // 2. Send via SocketManager
+      const manager = getSocketManager();
+      if (manager) {
+        const payload = pb.oceanchat.monkey.MsgUp.encode({
+          clientMsgId,
+          groupId: roomId,
+          msgType: pb.oceanchat.monkey.MsgUp.MsgType.TEXT,
+          content: text,
+        }).finish();
+
+        manager
+          .sendRequest({
+            cmd: Cmd.MSG_UP,
+            flags: Flags.REQUIRE_ACK,
+            length: payload.length,
+            payload,
+          })
+          .catch((err) => {
+            console.error(
+              '[ChatInput] Message send rejected by socket manager',
+              err,
+            );
+            // Mark as failed in store if sending fails (e.g. fatal disconnect or no retry)
+            useChatStore.getState().markMessageFailed(clientMsgId);
+          });
+      }
     }
   };
 

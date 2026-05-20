@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useConnectionStore } from '@/store/useConnectionStore';
 
 import { UserAvatar } from './user-avatar';
 
@@ -24,6 +25,7 @@ export default function ChatHeader({
 }: ChatHeaderProps) {
   const router = useRouter();
   const t = useTranslations('Chat');
+  const connStatus = useConnectionStore((state) => state.status);
 
   return (
     <div className="px-4 py-3 flex flex-col gap-2 bg-[#F9F9F9] dark:bg-gray-900 border-b border-black/5 dark:border-white/10 z-10 backdrop-blur-3xl bg-opacity-80 dark:bg-opacity-80">
@@ -48,11 +50,23 @@ export default function ChatHeader({
             <h2 className="text-[25px] font-extrabold text-gray-900 dark:text-gray-100 leading-none">
               {userName}
             </h2>
-            {userStatus && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                {userStatus}
-              </span>
-            )}
+            <div className="flex items-center gap-2 mt-1">
+              {userStatus && (
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  {userStatus}
+                </span>
+              )}
+              {connStatus === 'waiting' && (
+                <span className="text-xs text-orange-500 font-bold bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded-sm">
+                  Connecting...
+                </span>
+              )}
+              {connStatus === 'offline' && (
+                <span className="text-xs text-red-500 font-bold bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded-sm">
+                  Offline
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

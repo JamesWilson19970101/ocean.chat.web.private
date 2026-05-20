@@ -43,9 +43,9 @@ export default async function ChatRoom({ params }: ChatRoomProps) {
       />
       <Separator className="bg-black/5 dark:bg-white/10" />
 
-      <ChatMessages messages={messages} />
+      <ChatMessages roomId={roomId} messages={messages} />
 
-      <ChatInput />
+      <ChatInput roomId={roomId} />
     </div>
   );
 }
