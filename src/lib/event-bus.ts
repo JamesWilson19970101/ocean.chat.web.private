@@ -5,6 +5,7 @@
 
 export type AppEventMap = {
   'auth:logout': void;
+  'protocol:force-update': void;
   // Add other events here as needed
 };
 

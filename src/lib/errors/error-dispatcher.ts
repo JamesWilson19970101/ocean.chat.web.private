@@ -114,6 +114,12 @@ class GlobalErrorDispatcher {
     this.register(ErrorCodes.TOKEN_REVOKED, authErrorHandler);
     this.register(ErrorCodes.WS_CLOSE_HANDSHAKE_TIMEOUT, authErrorHandler);
 
+    // 426 Protocol Mismatch -> Trigger Force Update
+    this.register(426, (msg) => {
+      console.error(`[Protocol Error]: ${msg}. Triggering force update...`);
+      appEventBus.emit('protocol:force-update', undefined);
+    });
+
     // Rate Limit Exceeded
     this.register(ErrorCodes.RATE_LIMIT_EXCEEDED, (msg) => {
       // NOTE: Replace with your actual UI Toast library (e.g., react-hot-toast)

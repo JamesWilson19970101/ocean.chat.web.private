@@ -21,4 +21,5 @@ export interface Message {
   duration?: string;
   fileName?: string;
   fileSize?: string;
+  sendStatus?: 'SENDING' | 'SENT' | 'FAILED';
 }
