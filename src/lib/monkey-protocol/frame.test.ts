@@ -10,6 +10,7 @@ describe('Monkey Protocol Frame Encoder/Decoder', () => {
       cmd: Cmd.PING,
       flags: Flags.NONE,
       reqId: 0,
+      length: 0,
       payload: new Uint8Array(),
     };
 
@@ -31,6 +32,7 @@ describe('Monkey Protocol Frame Encoder/Decoder', () => {
       cmd: Cmd.MSG_UP,
       flags: Flags.REQUIRE_ACK | Flags.COMPRESSED,
       reqId: 16777215, // Max 24-bit integer
+      length: payload.length,
       payload,
     };
 
@@ -50,8 +52,10 @@ describe('Monkey Protocol Frame Encoder/Decoder', () => {
     // Write invalid magic number
     buffer[0] = 0x12;
     buffer[1] = 0x34;
-    
-    expect(() => FrameDecoder.decode(buffer)).toThrowError(/Invalid Magic Number/);
+
+    expect(() => FrameDecoder.decode(buffer)).toThrowError(
+      /Invalid Magic Number/,
+    );
   });
 
   it('should throw error for incomplete buffer', () => {
@@ -65,13 +69,16 @@ describe('Monkey Protocol Frame Encoder/Decoder', () => {
       cmd: Cmd.AUTH_REQ,
       flags: Flags.NONE,
       reqId: 1,
+      length: 10,
       payload: new Uint8Array(10), // length 10
     };
 
     const encoded = FrameEncoder.encode(frame);
     // Slice off the last byte
     const incomplete = encoded.slice(0, encoded.length - 1);
-    
-    expect(() => FrameDecoder.decode(incomplete)).toThrowError(/Incomplete payload/);
+
+    expect(() => FrameDecoder.decode(incomplete)).toThrowError(
+      /Incomplete payload/,
+    );
   });
 });

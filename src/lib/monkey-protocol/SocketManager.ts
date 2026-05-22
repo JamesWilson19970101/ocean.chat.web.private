@@ -14,7 +14,7 @@ export interface SocketManagerOptions {
   jwt: () => Promise<string | null>;
   deviceId: string;
   deviceType: string;
-  maxRetries?: number; // Optional, default to 10
+  maxRetries?: number; // Optional, default to 3
 }
 
 /**
@@ -66,7 +66,7 @@ export class SocketManager {
    */
   constructor(options: SocketManagerOptions) {
     this.options = {
-      maxRetries: 10,
+      maxRetries: 3,
       ...options,
     };
     this.inFlightQueue = new InFlightQueue();
@@ -399,8 +399,8 @@ export class SocketManager {
       }
     }
 
-    // Trigger full sync to cover offline period
-    this.syncEngine.triggerSync();
+    // Trigger full sync to cover offline period TODO: Uncomment
+    // this.syncEngine.triggerSync();
   }
 
   /**
