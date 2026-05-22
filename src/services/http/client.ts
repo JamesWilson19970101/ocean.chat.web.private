@@ -153,7 +153,7 @@ httpClient.interceptors.response.use(
     } else {
       // Map generic network/system errors
       const systemErrorCode = ErrorCodes.SERVICE_ERROR;
-      let systemMessageKey = 'Errors.unexpected';
+      let systemMessageKey = 'Errors.service';
 
       if (error.code === 'ECONNABORTED') {
         systemMessageKey = 'Errors.requestTimeout';
