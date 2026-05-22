@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
           }
         : false,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        // Fallback to localhost:1996 (default API gateway port) if env is missing
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:1994'}/:path*`,
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
