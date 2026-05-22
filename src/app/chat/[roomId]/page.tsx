@@ -16,6 +16,7 @@ export default async function ChatRoom({ params }: ChatRoomProps) {
   const { roomId } = await params;
   const t = await getTranslations('ChatRoom');
 
+  // TODO: Use Redis store recent messages.
   // Simulate server-side fetch
   const messages = getMockMessages(roomId);
   const room = mockRooms.find((r) => r.id === roomId);

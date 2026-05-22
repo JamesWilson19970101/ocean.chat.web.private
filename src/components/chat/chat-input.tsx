@@ -19,7 +19,7 @@ interface ChatInputProps {
 export function ChatInput({ roomId }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const t = useTranslations('Chat');
-  const userId = useAuthStore((state) => state.userId);
+  const userId = useAuthStore((state) => state.user?._id);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
