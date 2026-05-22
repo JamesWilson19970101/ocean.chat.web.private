@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 
 import { AppBootstrapProvider } from '@/components/providers/app-bootstrap-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -37,7 +38,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AppBootstrapProvider>{children}</AppBootstrapProvider>
+          <TooltipProvider>
+            <AppBootstrapProvider>{children}</AppBootstrapProvider>
+          </TooltipProvider>
         </NextIntlClientProvider>
       </body>
     </html>
