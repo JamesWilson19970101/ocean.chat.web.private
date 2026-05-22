@@ -15,7 +15,7 @@ export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Auth Logic
-  // We use 'refresh_token' as indicator of a valid session (set by backend).
+  // I use 'refresh_token' as indicator of a valid session (set by backend).
   const hasSession = request.cookies.has('refresh_token');
 
   // Check if route is protected
