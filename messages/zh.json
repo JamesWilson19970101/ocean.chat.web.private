@@ -34,10 +34,38 @@
     "attach": "附件",
     "typeMessagePlaceholder": "输入消息",
     "searchRoomPlaceholder": "搜索聊天室",
-    "userAvatar": "用户头像"
+    "userAvatar": "用户头像",
+    "new": "新建聊天室",
+    "directMessage": "单聊",
+    "privateGroup": "私密群组",
+    "account": "账户",
+    "profile": "个人资料",
+    "preferences": "偏好设置",
+    "logout": "退出登录",
+    "logoutConfirmTitle": "退出登录",
+    "logoutConfirmMessage": "确定要退出当前账号吗？",
+    "cancel": "取消",
+    "confirm": "确定",
+    "personalSettings": "个人设置"
+  },
+  "DirectChat": {
+    "new": "新建单聊",
+    "userNotFound": "未找到联系人",
+    "searchUser": "搜索联系人名称...",
+    "Yes": "确定",
+    "No": "取消"
+  },
+  "PrivateGroup": {
+    "hasSelected": "已选择人数：",
+    "userNotFound": "未找到联系人",
+    "searchUser": "搜索联系人名称...",
+    "new": "新建私密群组",
+    "Yes": "确定",
+    "No": "取消"
   },
   "Errors": {
     "unexpected": "发生了意外错误",
+    "service": "服务故障，请稍后再试",
     "requestTimeout": "请求超时",
     "networkDisconnected": "网络连接已断开",
     "wsHandshakeTimeout": "WebSocket 握手超时。需要重新进行身份验证。",
@@ -53,8 +81,8 @@
     "eventBusHandlerError": "{event} 事件处理程序出错：",
     "authErrorLog": "[Auth Error]: {msg}。正在触发注销...",
     "protocolErrorLog": "[Protocol Error]: {msg}。正在触发强制更新...",
-    "rateLimitToast": "[Rate Limit Toast]: {msg}",
-    "unhandledErrorToast": "[Unhandled Error Toast] 状态码 {errorCode}: {message}",
-    "unhandledServerErrorLog": "[Unhandled Server Error] 状态码 {errorCode}: {message}"
+    "rateLimitToast": "[Rate Limit]: {msg}",
+    "unhandledErrorToast": "状态码 {errorCode}: {message}",
+    "unhandledServerErrorLog": "状态码 {errorCode}: {message}"
   }
 }

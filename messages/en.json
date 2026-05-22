@@ -34,7 +34,34 @@
     "attach": "Attach",
     "typeMessagePlaceholder": "Type a message",
     "searchRoomPlaceholder": "Search Room",
-    "userAvatar": "User Avatar"
+    "userAvatar": "User Avatar",
+    "new": "new room",
+    "directMessage": "Direct Message",
+    "privateGroup": "Private Group",
+    "account": "Account",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "logout": "Logout",
+    "logoutConfirmTitle": "Log Out",
+    "logoutConfirmMessage": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "personalSettings": "Personal Settings"
+  },
+  "DirectChat": {
+    "new": "Direct Message",
+    "userNotFound": "Can't find user.",
+    "searchUser": "Search user name...",
+    "Yes": "Yes",
+    "No": "No"
+  },
+  "PrivateGroup": {
+    "hasSelected": "You have selected: ",
+    "userNotFound": "Can't find user.",
+    "searchUser": "Search user name...",
+    "new": "Private Group",
+    "Yes": "Yes",
+    "No": "No"
   },
   "Errors": {
     "unexpected": "An unexpected error occurred",
@@ -53,8 +80,10 @@
     "eventBusHandlerError": "Error in event handler for {event}:",
     "authErrorLog": "[Auth Error]: {msg}. Triggering logout...",
     "protocolErrorLog": "[Protocol Error]: {msg}. Triggering force update...",
-    "rateLimitToast": "[Rate Limit Toast]: {msg}",
-    "unhandledErrorToast": "[Unhandled Error Toast] Code {errorCode}: {message}",
-    "unhandledServerErrorLog": "[Unhandled Server Error] Code {errorCode}: {message}"
-  }
+    "rateLimitToast": "[Rate Limit]: {msg}",
+    "unhandledErrorToast": "Code {errorCode}: {message}",
+    "unhandledServerErrorLog": "Code {errorCode}: {message}"
+  },
+  "Yes": "Yes",
+  "No": "No"
 }

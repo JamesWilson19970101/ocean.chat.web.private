@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+
+import { useParams } from 'next/navigation';
 
 import { AppLogo } from '@/components/chat/app-logo';
 import { RoomList } from '@/components/chat/room-list';
@@ -7,11 +11,14 @@ import { Separator } from '@/components/ui/separator';
 import { mockRooms } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 
-export default async function ChatLayout({
+export default function ChatLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const params = useParams();
+  const isChatOpen = !!params?.roomId;
+
   // Simulate server-side fetch if needed
   const rooms = mockRooms;
 
@@ -24,6 +31,7 @@ export default async function ChatLayout({
           className={cn(
             'bg-[#F3F3F3]/80 backdrop-blur-3xl dark:bg-gray-900/80 border-r border-black/5 dark:border-white/10 flex flex-col transition-transform duration-300 ease-in-out absolute inset-y-0 left-0 w-full z-20 transform',
             'md:relative md:w-80 md:inset-auto md:translate-x-0',
+            isChatOpen ? '-translate-x-full md:translate-x-0' : 'translate-x-0',
           )}
         >
           <SidebarHeader />
@@ -39,7 +47,9 @@ export default async function ChatLayout({
         {/* right - chat content */}
         <main
           className={cn(
-            'flex-1 flex flex-col transition-transform transform duration-300 ease-in-out translate-x-full bg-white/60 dark:bg-gray-950/60 backdrop-blur-[240px] md:translate-x-0 relative shadow-[-32px_0_64px_rgba(0,0,0,0.05)] rounded-tl-[7px]',
+            'flex-1 flex flex-col transition-transform transform duration-300 ease-in-out bg-white/60 dark:bg-gray-950/60 backdrop-blur-[240px] shadow-[-32px_0_64px_rgba(0,0,0,0.05)] rounded-tl-[7px]',
+            'absolute inset-y-0 left-0 w-full z-30 md:relative md:w-auto md:inset-auto md:z-10',
+            isChatOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
           )}
         >
           {/* Subtle gradient overlay at the top (Mica effect matching) */}

@@ -1,5 +1,22 @@
 import { Room, Message } from '@/types/chat';
 
+export interface MockUser {
+  id: string;
+  username: string;
+  avatarUrl: string;
+}
+
+export const MOCK_USERS: MockUser[] = [
+  { id: 'u1', username: 'Alice Smith', avatarUrl: '/avatars/alice.png' },
+  { id: 'u2', username: 'Bob Johnson', avatarUrl: '/avatars/bob.png' },
+  { id: 'u3', username: 'Charlie Brown', avatarUrl: '/avatars/charlie.png' },
+  { id: 'u4', username: 'David Lee', avatarUrl: '/avatars/david.png' },
+  { id: 'u5', username: 'Eva Green', avatarUrl: '/avatars/eva.png' },
+  { id: 'u6', username: 'Frank Wright', avatarUrl: '/avatars/frank.png' },
+  { id: 'u7', username: 'Grace Kelly', avatarUrl: '/avatars/grace.png' },
+  { id: 'u8', username: 'Henry Ford', avatarUrl: '/avatars/henry.png' },
+];
+
 export const mockRooms: Room[] = [
   {
     id: '1',
