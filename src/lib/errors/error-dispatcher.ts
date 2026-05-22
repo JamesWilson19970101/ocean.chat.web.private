@@ -1,7 +1,8 @@
+import { toast } from 'react-hot-toast';
+
 import { ErrorCodes } from '@/constants/error-codes';
 
 import { appEventBus } from '../event-bus';
-
 /**
  * Strategy handler function definition.
  */
@@ -13,7 +14,10 @@ export type ErrorHandlerFn = (
 /**
  * Type for a translation function that takes a key and returns a string.
  */
-export type TranslatorFn = (key: string) => string;
+export type TranslatorFn = (
+  key: string,
+  values?: Record<string, string | number>,
+) => string;
 
 /**
  * Global Error Dispatcher using the Strategy Pattern.
@@ -52,23 +56,29 @@ class GlobalErrorDispatcher {
   }
 
   /**
+   * Formats a message with fallback for non-i18n environments.
+   */
+  private t(
+    key: string,
+    fallback: string,
+    values?: Record<string, string | number>,
+  ): string {
+    if (this.translator) return this.translator(key, values);
+    let result = fallback;
+    if (values) {
+      for (const [k, v] of Object.entries(values))
+        result = result.replace(`{${k}}`, String(v));
+    }
+    return result;
+  }
+
+  /**
    * Registers a specific strategy for a given error code.
    * @param errorCode The business error code (e.g., from ErrorCodes enum)
    * @param handler The strategy function to execute
    */
   public register(errorCode: number, handler: ErrorHandlerFn): void {
     this.handlers.set(errorCode, handler);
-  }
-
-  /**
-   * Sanitizes details for server-side logging to avoid leaking sensitive information.
-   */
-  private sanitizeDetails(details?: Record<string, unknown>): Record<string, unknown> | undefined {
-    if (!details) return undefined;
-    
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    const { config, request, response, ...safeDetails } = details as any;
-    return safeDetails;
   }
 
   /**
@@ -84,11 +94,12 @@ class GlobalErrorDispatcher {
 
     // Only execute UI/Routing side effects in the browser
     if (typeof window === 'undefined') {
-      const safeDetails = this.sanitizeDetails(details);
-      console.error(
-        `[Server Error] Code: ${errorCode}, Msg: ${resolvedMessage}`,
-        safeDetails,
+      const logMsg = this.t(
+        'serverErrorLog',
+        '[Server Error] Code: {errorCode}, Msg: {message}',
+        { errorCode, message: resolvedMessage },
       );
+      console.error(logMsg, details);
       return;
     }
 
@@ -106,7 +117,13 @@ class GlobalErrorDispatcher {
   private registerDefaultStrategies(): void {
     // 401 Unauthorized / Token Revoked -> Trigger Global Logout
     const authErrorHandler: ErrorHandlerFn = (msg) => {
-      console.warn(`[Auth Error]: ${msg}. Triggering logout...`);
+      const logMsg = this.t(
+        'authErrorLog',
+        '[Auth Error]: {msg}. Triggering logout...',
+        { msg },
+      );
+      toast.error(logMsg);
+      console.error(logMsg);
       appEventBus.emit('auth:logout', undefined);
     };
 
@@ -116,15 +133,23 @@ class GlobalErrorDispatcher {
 
     // 426 Protocol Mismatch -> Trigger Force Update
     this.register(426, (msg) => {
-      console.error(`[Protocol Error]: ${msg}. Triggering force update...`);
+      const logMsg = this.t(
+        'protocolErrorLog',
+        '[Protocol Error]: {msg}. Triggering force update...',
+        { msg },
+      );
+      console.error(logMsg);
       appEventBus.emit('protocol:force-update', undefined);
     });
 
     // Rate Limit Exceeded
     this.register(ErrorCodes.RATE_LIMIT_EXCEEDED, (msg) => {
       // NOTE: Replace with your actual UI Toast library (e.g., react-hot-toast)
-      console.error(`[Rate Limit Toast]: ${msg}`);
-      // toast.error(msg || "Too many requests. Please try again later.");
+      const logMsg = this.t('rateLimitToast', '[Rate Limit Toast]: {msg}', {
+        msg,
+      });
+      console.error(logMsg);
+      toast.error(logMsg);
     });
   }
 
@@ -137,16 +162,20 @@ class GlobalErrorDispatcher {
     details?: Record<string, unknown>,
   ): void {
     if (typeof window !== 'undefined') {
-      console.error(
-        `[Unhandled Error Toast] Code ${errorCode}: ${message}`,
-        details,
+      const logMsg = this.t(
+        'unhandledErrorToast',
+        '[Unhandled Error Toast] Code {errorCode}: {message}',
+        { errorCode, message },
       );
+      toast.error(logMsg);
+      console.error(logMsg, details);
     } else {
-      const safeDetails = this.sanitizeDetails(details);
-      console.error(
-        `[Unhandled Server Error] Code ${errorCode}: ${message}`,
-        safeDetails,
+      const logMsg = this.t(
+        'unhandledServerErrorLog',
+        '[Unhandled Server Error] Code {errorCode}: {message}',
+        { errorCode, message },
       );
+      console.error(logMsg, details);
     }
   }
 }

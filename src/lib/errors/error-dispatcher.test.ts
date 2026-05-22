@@ -36,7 +36,12 @@ describe('GlobalErrorDispatcher', () => {
   });
 
   it('should resolve i18n keys when a translator is provided', () => {
-    const mockT = vi.fn((key) => `Translated: ${key}`);
+    const mockT = vi.fn((key, values) => {
+      if (key === 'authError') return 'Translated: authError';
+      if (key === 'authErrorLog')
+        return `[Auth Error]: ${values.msg}. Triggering logout...`;
+      return `Translated: ${key}`;
+    });
     globalErrorDispatcher.setTranslator(mockT);
 
     const emitSpy = vi.spyOn(appEventBus, 'emit');
@@ -46,7 +51,7 @@ describe('GlobalErrorDispatcher', () => {
 
     expect(mockT).toHaveBeenCalledWith('authError');
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining('[Auth Error]: Translated: authError'),
     );
   });
@@ -60,7 +65,7 @@ describe('GlobalErrorDispatcher', () => {
     );
 
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining('[Auth Error]: Unauthorized message'),
     );
   });

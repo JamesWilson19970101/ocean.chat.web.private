@@ -11,9 +11,35 @@ export type AppEventMap = {
 
 type EventHandler<T> = (payload: T) => void;
 
+export type TranslatorFn = (
+  key: string,
+  values?: Record<string, string | number>,
+) => string;
+
 class EventBus {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handlers: Map<keyof AppEventMap, EventHandler<any>[]> = new Map();
+
+  private translator: TranslatorFn | null = null;
+
+  public setTranslator(translator: TranslatorFn): void {
+    this.translator = translator;
+  }
+
+  private t(
+    key: string,
+    fallback: string,
+    values?: Record<string, string | number>,
+  ): string {
+    if (this.translator) return this.translator(key, values);
+    let result = fallback;
+    if (values) {
+      for (const [k, v] of Object.entries(values)) {
+        result = result.replace(`{${k}}`, String(v));
+      }
+    }
+    return result;
+  }
 
   /**
    * Subscribes to an event.
@@ -21,7 +47,10 @@ class EventBus {
    * @param handler The callback to execute
    * @returns A cleanup function to unsubscribe
    */
-  on<K extends keyof AppEventMap>(event: K, handler: EventHandler<AppEventMap[K]>): () => void {
+  on<K extends keyof AppEventMap>(
+    event: K,
+    handler: EventHandler<AppEventMap[K]>,
+  ): () => void {
     const currentHandlers = this.handlers.get(event) || [];
     this.handlers.set(event, [...currentHandlers, handler]);
 
@@ -36,7 +65,10 @@ class EventBus {
    * @param event The event name
    * @param handler The callback to remove
    */
-  off<K extends keyof AppEventMap>(event: K, handler: EventHandler<AppEventMap[K]>): void {
+  off<K extends keyof AppEventMap>(
+    event: K,
+    handler: EventHandler<AppEventMap[K]>,
+  ): void {
     const currentHandlers = this.handlers.get(event);
     if (currentHandlers) {
       const filtered = currentHandlers.filter((h) => h !== handler);
@@ -60,7 +92,12 @@ class EventBus {
         try {
           handler(payload);
         } catch (error) {
-          console.error(`Error in event handler for ${event}:`, error);
+          const logMsg = this.t(
+            'eventBusHandlerError',
+            'Error in event handler for {event}:',
+            { event: String(event) },
+          );
+          console.error(logMsg, error);
         }
       });
     }
