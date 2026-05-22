@@ -2,37 +2,52 @@ import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-interface AuthState {
-  token: string | null;
-  userId: string | null;
+import { UserProfile } from '@/types/auth';
+
+interface AuthStore {
+  isAuthenticated: boolean;
+  accessToken: string | null;
+  user: UserProfile | null;
   deviceId: string;
-  setAuth: (token: string, userId: string) => void;
+  deviceType: 'Web';
+  setAuth: (accessToken: string, user: UserProfile) => void;
+  setAccessToken: (accessToken: string) => void;
   clearAuth: () => void;
 }
 
 /**
  * Manages authentication state.
  *
- * IMPORTANT: This store persists the `userId` to localStorage for convenience but
- * intentionally does NOT persist the `token` (Access Token) to mitigate XSS risks.
- * The access token is held in-memory only. The application is expected to
- * re-acquire the token on startup (e.g., via a refresh token flow).
+ * IMPORTANT: This store strictly follows the security guidelines:
+ * It persists ONLY the `deviceId` to localStorage.
+ * `accessToken` and `user` data are held in-memory only to mitigate XSS risks.
+ * The application relies on HttpOnly cookies and the /auth/refresh endpoint
+ * to re-acquire the accessToken on startup or when it expires.
  */
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      token: null,
-      userId: null,
+      isAuthenticated: false,
+      accessToken: null,
+      user: null,
       deviceId: `web-${uuidv7()}`,
-      setAuth: (token, userId) => set({ token, userId }), // Token is now only in-memory
-      clearAuth: () => set({ token: null, userId: null }), // Clears both in-memory and persisted state
+      deviceType: 'Web',
+
+      setAuth: (accessToken, user) =>
+        set({ isAuthenticated: true, accessToken, user }),
+
+      setAccessToken: (accessToken) =>
+        set({ accessToken, isAuthenticated: true }),
+
+      clearAuth: () =>
+        set({ isAuthenticated: false, accessToken: null, user: null }),
     }),
     {
       name: 'ocean-auth-storage',
       storage: createJSONStorage(() => localStorage),
-      // Only persist the `userId` & `deviceId`. The `token` will be reset to its initial value (`null`) on rehydration.
+      // ONLY persist deviceId. Everything else is cleared on page reload
+      // to ensure maximum token security.
       partialize: (state) => ({
-        userId: state.userId,
         deviceId: state.deviceId,
       }),
     },

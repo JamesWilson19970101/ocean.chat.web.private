@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { useAuthStore } from './useAuthStore';
 
 describe('useAuthStore Security & Persistence', () => {
@@ -9,23 +10,25 @@ describe('useAuthStore Security & Persistence', () => {
 
   it('should NOT persist token in localStorage (XSS Mitigation)', () => {
     const store = useAuthStore.getState();
-    store.setAuth('secret-jwt-token', 'user-1');
+    store.setAuth('secret-jwt-token', { _id: 'user-1', username: 'u1' });
 
     // Manually check localStorage (simulating page reload)
-    const stored = JSON.parse(localStorage.getItem('ocean-auth-storage') || '{}');
-    
-    // Based on partialize logic: only userId and deviceId should be here
-    expect(stored.state.userId).toBe('user-1');
-    expect(stored.state.token).toBeUndefined(); // Crucial security gate
+    const stored = JSON.parse(
+      localStorage.getItem('ocean-auth-storage') || '{}',
+    );
+
+    // Based on partialize logic: only deviceId should be here
+    expect(stored.state.user).toBeUndefined();
+    expect(stored.state.accessToken).toBeUndefined(); // Crucial security gate
     expect(stored.state.deviceId).toBeDefined();
   });
 
   it('should clear all state on clearAuth', () => {
     const store = useAuthStore.getState();
-    store.setAuth('tk', 'u1');
+    store.setAuth('tk', { _id: 'u1', username: 'u1' });
     store.clearAuth();
 
-    expect(useAuthStore.getState().token).toBeNull();
-    expect(useAuthStore.getState().userId).toBeNull();
+    expect(useAuthStore.getState().accessToken).toBeNull();
+    expect(useAuthStore.getState().user).toBeNull();
   });
 });
