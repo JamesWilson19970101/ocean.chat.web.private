@@ -2,12 +2,16 @@
 
 import { useEffect } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Toaster, toast } from 'react-hot-toast';
 
+import { API_ROUTES } from '@/constants/api-routes';
+import { AUTH_ROUTES } from '@/constants/routes';
 import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
 import { appEventBus } from '@/lib/event-bus';
 import { initSocketManager, getSocketManager } from '@/lib/monkey-protocol';
+import { httpClient } from '@/services/http/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
 
@@ -17,29 +21,42 @@ export function AppBootstrapProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('Errors');
-  const token = useAuthStore((state) => state.token);
-  const userId = useAuthStore((state) => state.userId);
+  const token = useAuthStore((state) => state.accessToken);
+  const userId = useAuthStore((state) => state.user?._id);
 
   // Sync userId to ChatStore for dynamic UI logic
   useEffect(() => {
-    useChatStore.getState().setCurrentUserId(userId);
+    useChatStore.getState().setCurrentUserId(userId ?? null);
   }, [userId]);
 
-  // Inject translator into the singleton dispatcher
+  // Inject translator into the singleton dispatcher and event bus
   useEffect(() => {
-    globalErrorDispatcher.setTranslator((key: string) => t(key));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const translator = (key: string, values?: Record<string, any>) =>
+      t(key, values);
+    globalErrorDispatcher.setTranslator(translator);
+    appEventBus.setTranslator(translator);
   }, [t]);
+
+  // Attempt silent refresh on boot if token is missing
+  useEffect(() => {
+    if (!useAuthStore.getState().accessToken) {
+      httpClient.post(API_ROUTES.AUTH.REFRESH).catch(() => {
+        console.log(t('silentRefreshFailed'));
+      });
+    }
+  }, []);
 
   useEffect(() => {
     // Only connect if we have a token
-    // TODO: Sliently refresh token
     if (!token) return;
 
     // Initialize Monkey Protocol Socket Manager
     const socketManager = initSocketManager({
       url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:1996/monkey',
-      jwt: async () => useAuthStore.getState().token,
+      jwt: async () => useAuthStore.getState().accessToken,
       deviceId: useAuthStore.getState().deviceId,
       deviceType: 'web',
     });
@@ -48,27 +65,31 @@ export function AppBootstrapProvider({
 
     return () => {
       // Prevent connection leaks during HMR or navigation
-      console.log('AppBootstrapProvider: Cleaning up WebSocket connection');
+      console.log(t('cleaningUpWebSocket'));
       getSocketManager()?.disconnect();
     };
-  }, [token]);
+  }, [t, token]);
 
   useEffect(() => {
     // Listen to global events
     const unsubscribeLogout = appEventBus.on('auth:logout', () => {
-      console.log('AppBootstrapProvider: Handling auth:logout event');
+      console.log(t('handlingAuthLogout'));
       // Perform UI side-effects: clear local storage/zustand states if applicable
-      // then redirect to login page
-      router.push('/login');
+      // then redirect to login page if not already on an auth route
+      const isAuthRoute = AUTH_ROUTES.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`),
+      );
+
+      if (!isAuthRoute) {
+        router.push('/login');
+      }
     });
 
     const unsubscribeForceUpdate = appEventBus.on(
       'protocol:force-update',
       () => {
-        console.error(
-          'AppBootstrapProvider: Handling protocol:force-update event (Protocol Mismatch)',
-        );
-        alert('Protocol version mismatch. Please update your client.'); // Use components instead of alert.
+        console.error(t('handlingProtocolMismatch'));
+        toast.error(t('protocolMismatch'), { duration: 5000 });
       },
     );
 
@@ -77,7 +98,12 @@ export function AppBootstrapProvider({
       unsubscribeLogout();
       unsubscribeForceUpdate();
     };
-  }, [router]);
+  }, [router, pathname, t]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <Toaster position="top-center" reverseOrder={false} />
+    </>
+  );
 }

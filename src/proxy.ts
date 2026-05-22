@@ -4,7 +4,7 @@ import { PROTECTED_ROUTES, AUTH_ROUTES, ROUTES } from './constants/routes';
 
 /**
  * Combined Proxy for Authentication and Routing.
- * 
+ *
  * Logic flow:
  * 1. Check if the path is protected or guest-only.
  * 2. Validate refreshToken/accessToken from cookies.
@@ -15,18 +15,16 @@ export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Auth Logic
-  // We use 'refreshToken' or 'accessToken' as indicators of a valid session.
-  const hasSession = request.cookies.has('refreshToken') || request.cookies.has('accessToken');
+  // We use 'refresh_token' as indicator of a valid session (set by backend).
+  const hasSession = request.cookies.has('refresh_token');
 
   // Check if route is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+  const isProtectedRoute = PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
-  
+
   // Check if route is auth-only (login/register)
-  const isAuthRoute = AUTH_ROUTES.some(route => 
-    pathname === route
-  );
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route);
 
   // 2. Determine Response with Locale Persistence
   let response: NextResponse;
@@ -58,5 +56,5 @@ export const config = {
   // - /api (API routes)
   // - /_next (Next.js internals)
   // - /static, /favicon.ico, etc. (static files)
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/((?!api|_next|.*\\..*).*)'],
 };
