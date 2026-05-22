@@ -3,6 +3,9 @@
     "login": "登录",
     "register": "注册",
     "email": "邮箱",
+    "username": "用户名",
+    "usernamePlaceholder": "请输入用户名",
+    "invalidUsername": "无效用户名",
     "emailPlaceholder": "请输入邮箱",
     "password": "密码",
     "passwordPlaceholder": "请输入密码",
@@ -13,7 +16,11 @@
     "submit": "提交",
     "invalidEmail": "请输入有效的邮箱账号",
     "passwordMinLength": "密码不得少于6位",
-    "passwordsDontMatch": "密码不匹配"
+    "passwordsDontMatch": "密码不匹配",
+    "loading": "正在执行操作...",
+    "registrationFailed": "注册失败",
+    "loginFailed": "登录失败，请稍后重试。",
+    "wsConnectionFailed": "聊天服务器连接失败，请稍后重试。"
   },
   "ChatRoom": {
     "roomNotFound": "未找到聊天室",
@@ -36,6 +43,18 @@
     "wsHandshakeTimeout": "WebSocket 握手超时。需要重新进行身份验证。",
     "wsConnectionFailed": "无法连接到聊天服务器。",
     "rateLimitExceeded": "请求过于频繁。请稍后再试。",
-    "authError": "身份验证错误"
+    "authError": "身份验证错误",
+    "protocolMismatch": "协议版本不匹配，请更新您的客户端。",
+    "silentRefreshFailed": "AppBootstrapProvider: 后台静默刷新失败或不适用。正在等待手动登录。",
+    "cleaningUpWebSocket": "AppBootstrapProvider: 正在清理 WebSocket 连接",
+    "handlingAuthLogout": "AppBootstrapProvider: 正在处理 auth:logout 注销事件",
+    "handlingProtocolMismatch": "AppBootstrapProvider: 正在处理 protocol:force-update 强制更新事件（协议不匹配）",
+    "serverErrorLog": "[Server Error] 状态码: {errorCode}, 消息: {message}",
+    "eventBusHandlerError": "{event} 事件处理程序出错：",
+    "authErrorLog": "[Auth Error]: {msg}。正在触发注销...",
+    "protocolErrorLog": "[Protocol Error]: {msg}。正在触发强制更新...",
+    "rateLimitToast": "[Rate Limit Toast]: {msg}",
+    "unhandledErrorToast": "[Unhandled Error Toast] 状态码 {errorCode}: {message}",
+    "unhandledServerErrorLog": "[Unhandled Server Error] 状态码 {errorCode}: {message}"
   }
 }

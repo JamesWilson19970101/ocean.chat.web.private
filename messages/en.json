@@ -3,6 +3,9 @@
     "login": "Login",
     "register": "Register",
     "email": "Email",
+    "username": "username",
+    "usernamePlaceholder": "Please enter username",
+    "invalidUsername": "invalid username",
     "emailPlaceholder": "Please enter your email",
     "password": "Password",
     "passwordPlaceholder": "Please enter your password",
@@ -13,7 +16,11 @@
     "submit": "Submit",
     "invalidEmail": "Please enter a valid email address.",
     "passwordMinLength": "Password must be at least 6 characters.",
-    "passwordsDontMatch": "Passwords don't match."
+    "passwordsDontMatch": "Passwords don't match.",
+    "loading": "loading",
+    "registrationFailed": "registration failed.",
+    "loginFailed": "login failed, please try again later.",
+    "wsConnectionFailed": "Failed to connect to chat server. Please try again."
   },
   "ChatRoom": {
     "roomNotFound": "Room not found",
@@ -36,6 +43,18 @@
     "wsHandshakeTimeout": "WebSocket Handshake Timeout. Re-authentication required.",
     "wsConnectionFailed": "Unable to connect to the chat server.",
     "rateLimitExceeded": "Too many requests. Please try again later.",
-    "authError": "Authentication Error"
+    "authError": "Authentication Error",
+    "protocolMismatch": "Protocol version mismatch. Please update your client.",
+    "silentRefreshFailed": "AppBootstrapProvider: Silent refresh failed or not applicable. Waiting for manual login.",
+    "cleaningUpWebSocket": "AppBootstrapProvider: Cleaning up WebSocket connection",
+    "handlingAuthLogout": "AppBootstrapProvider: Handling auth:logout event",
+    "handlingProtocolMismatch": "AppBootstrapProvider: Handling protocol:force-update event (Protocol Mismatch)",
+    "serverErrorLog": "[Server Error] Code: {errorCode}, Msg: {message}",
+    "eventBusHandlerError": "Error in event handler for {event}:",
+    "authErrorLog": "[Auth Error]: {msg}. Triggering logout...",
+    "protocolErrorLog": "[Protocol Error]: {msg}. Triggering force update...",
+    "rateLimitToast": "[Rate Limit Toast]: {msg}",
+    "unhandledErrorToast": "[Unhandled Error Toast] Code {errorCode}: {message}",
+    "unhandledServerErrorLog": "[Unhandled Server Error] Code {errorCode}: {message}"
   }
 }
