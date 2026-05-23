@@ -1,3 +1,4 @@
+import { ErrorCodes } from '@/constants/error-codes';
 import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
 import { useChatStore } from '@/store/useChatStore';
 import { useConnectionStore } from '@/store/useConnectionStore';
@@ -244,10 +245,11 @@ export class SocketManager {
     // Send AUTH_REQ
     const jwt = await this.options.jwt();
     if (!jwt) {
-      globalErrorDispatcher.dispatch(
-        ErrorCode.UNAUTHORIZED,
-        'No JWT token available',
-      );
+      globalErrorDispatcher.dispatch({
+        errorCode: ErrorCode.UNAUTHORIZED,
+        message: 'No JWT token available',
+        source: 'ws',
+      });
       this.disconnect();
       return;
     }
@@ -341,6 +343,27 @@ export class SocketManager {
    */
   private onClose(event: CloseEvent) {
     console.log(`[SocketManager] WebSocket closed. Code: ${event.code}`);
+
+    // Handle specific disconnect codes before generic reconnect logic
+    if (event.code === ErrorCodes.WS_CLOSE_SERVICE_RESTART) {
+      // WS_CLOSE_SERVICE_RESTART
+      console.warn(
+        '[SocketManager] Backend gateway restarted. Initiating reconnect.',
+      );
+      this.reconnect();
+      return;
+    } else if (event.code === ErrorCodes.WS_CLOSE_HANDSHAKE_TIMEOUT) {
+      // WS_CLOSE_HANDSHAKE_TIMEOUT
+      console.warn('[SocketManager] Handshake timeout. Triggering re-auth.');
+      globalErrorDispatcher.dispatch({
+        errorCode: ErrorCode.UNAUTHORIZED,
+        message: 'Errors.wsHandshakeTimeout',
+        details: { closeEventCode: event.code },
+        source: 'ws',
+      });
+      return;
+    }
+
     if (!this.isIntentionalClose) {
       this.reconnect();
     }
@@ -457,10 +480,11 @@ export class SocketManager {
             .setFailed(new Error('Protocol mismatch, force update required'));
           this.isIntentionalClose = true;
           this.cleanup();
-          globalErrorDispatcher.dispatch(
-            ErrorCode.PROTOCOL_MISMATCH,
-            'Version mismatch',
-          );
+          globalErrorDispatcher.dispatch({
+            errorCode: ErrorCode.PROTOCOL_MISMATCH,
+            message: 'Version mismatch',
+            source: 'ws',
+          });
           return;
         }
       }
@@ -469,18 +493,20 @@ export class SocketManager {
       if (decoded.errorCode === ErrorCode.UNAUTHORIZED) {
         this.isIntentionalClose = true;
         this.cleanup();
-        globalErrorDispatcher.dispatch(
-          ErrorCode.UNAUTHORIZED,
-          decoded.message ?? 'Unauthorized',
-        );
+        globalErrorDispatcher.dispatch({
+          errorCode: ErrorCode.UNAUTHORIZED,
+          message: decoded.message ?? 'Unauthorized',
+          source: 'ws',
+        });
         return;
       }
 
       // Dispatch other business errors
-      globalErrorDispatcher.dispatch(
-        decoded.errorCode ?? 500,
-        decoded.message ?? 'Unknown Exception',
-      );
+      globalErrorDispatcher.dispatch({
+        errorCode: decoded.errorCode ?? 500,
+        message: decoded.message ?? 'Unknown Exception',
+        source: 'ws',
+      });
     } catch (e) {
       console.error('[SocketManager] ExceptionAck decode failed', e);
     }
