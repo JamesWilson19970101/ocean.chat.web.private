@@ -1,15 +1,14 @@
 import { toast } from 'react-hot-toast';
 
 import { ErrorCodes } from '@/constants/error-codes';
+import { StandardizedAppError } from '@/types/error';
 
 import { appEventBus } from '../event-bus';
+
 /**
  * Strategy handler function definition.
  */
-export type ErrorHandlerFn = (
-  message: string,
-  details?: Record<string, unknown>,
-) => void;
+export type ErrorHandlerFn = (error: StandardizedAppError) => void;
 
 /**
  * Type for a translation function that takes a key and returns a string.
@@ -85,29 +84,29 @@ class GlobalErrorDispatcher {
    * Dispatches the error to the registered strategy, or a default fallback.
    * Only executes side effects (EventBus/Toast) in the client environment.
    */
-  public dispatch(
-    errorCode: number,
-    message: string,
-    details?: Record<string, unknown>,
-  ): void {
-    const resolvedMessage = this.resolveMessage(message);
+  public dispatch(error: StandardizedAppError): void {
+    const resolvedMessage = this.resolveMessage(error.message);
+    const resolvedError: StandardizedAppError = {
+      ...error,
+      message: resolvedMessage,
+    };
 
     // Only execute UI/Routing side effects in the browser
     if (typeof window === 'undefined') {
       const logMsg = this.t(
         'serverErrorLog',
         '[Server Error] Code: {errorCode}, Msg: {message}',
-        { errorCode, message: resolvedMessage },
+        { errorCode: resolvedError.errorCode, message: resolvedError.message },
       );
-      console.error(logMsg, details);
+      console.error(logMsg, resolvedError.details);
       return;
     }
 
-    const handler = this.handlers.get(errorCode);
+    const handler = this.handlers.get(resolvedError.errorCode);
     if (handler) {
-      handler(resolvedMessage, details);
+      handler(resolvedError);
     } else {
-      this.defaultFallbackHandler(errorCode, resolvedMessage, details);
+      this.defaultFallbackHandler(resolvedError);
     }
   }
 
@@ -116,11 +115,11 @@ class GlobalErrorDispatcher {
    */
   private registerDefaultStrategies(): void {
     // 401 Unauthorized / Token Revoked -> Trigger Global Logout
-    const authErrorHandler: ErrorHandlerFn = (msg) => {
+    const authErrorHandler: ErrorHandlerFn = (error) => {
       const logMsg = this.t(
         'authErrorLog',
         '[Auth Error]: {msg}. Triggering logout...',
-        { msg },
+        { msg: error.message },
       );
       toast.error(logMsg);
       console.error(logMsg);
@@ -132,21 +131,21 @@ class GlobalErrorDispatcher {
     this.register(ErrorCodes.WS_CLOSE_HANDSHAKE_TIMEOUT, authErrorHandler);
 
     // 426 Protocol Mismatch -> Trigger Force Update
-    this.register(426, (msg) => {
+    this.register(426, (error) => {
       const logMsg = this.t(
         'protocolErrorLog',
         '[Protocol Error]: {msg}. Triggering force update...',
-        { msg },
+        { msg: error.message },
       );
       console.error(logMsg);
       appEventBus.emit('protocol:force-update', undefined);
     });
 
     // Rate Limit Exceeded
-    this.register(ErrorCodes.RATE_LIMIT_EXCEEDED, (msg) => {
+    this.register(ErrorCodes.RATE_LIMIT_EXCEEDED, (error) => {
       // NOTE: Replace with your actual UI Toast library (e.g., react-hot-toast)
       const logMsg = this.t('rateLimitToast', '[Rate Limit Toast]: {msg}', {
-        msg,
+        msg: error.message,
       });
       console.error(logMsg);
       toast.error(logMsg);
@@ -156,26 +155,22 @@ class GlobalErrorDispatcher {
   /**
    * The fallback behavior when no specific strategy is registered.
    */
-  private defaultFallbackHandler(
-    errorCode: number,
-    message: string,
-    details?: Record<string, unknown>,
-  ): void {
+  private defaultFallbackHandler(error: StandardizedAppError): void {
     if (typeof window !== 'undefined') {
       const logMsg = this.t(
         'unhandledErrorToast',
         '[Unhandled Error Toast] Code {errorCode}: {message}',
-        { errorCode, message },
+        { errorCode: error.errorCode, message: error.message },
       );
       toast.error(logMsg);
-      console.error(logMsg, details);
+      console.error(logMsg, error.details);
     } else {
       const logMsg = this.t(
         'unhandledServerErrorLog',
         '[Unhandled Server Error] Code {errorCode}: {message}',
-        { errorCode, message },
+        { errorCode: error.errorCode, message: error.message },
       );
-      console.error(logMsg, details);
+      console.error(logMsg, error.details);
     }
   }
 }

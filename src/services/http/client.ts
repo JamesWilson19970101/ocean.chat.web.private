@@ -148,7 +148,12 @@ httpClient.interceptors.response.use(
        * and providing basic server-side logging.
        */
       if (!originalRequest?.skipGlobalErrorHandler) {
-        globalErrorDispatcher.dispatch(errorCode, message, details);
+        globalErrorDispatcher.dispatch({
+          errorCode,
+          message,
+          details,
+          source: 'http',
+        });
       }
     } else {
       // Map generic network/system errors
@@ -162,8 +167,13 @@ httpClient.interceptors.response.use(
       }
 
       if (!originalRequest?.skipGlobalErrorHandler) {
-        globalErrorDispatcher.dispatch(systemErrorCode, systemMessageKey, {
-          originalError: error,
+        globalErrorDispatcher.dispatch({
+          errorCode: systemErrorCode,
+          message: systemMessageKey,
+          details: {
+            originalError: error,
+          },
+          source: 'http',
         });
       }
     }

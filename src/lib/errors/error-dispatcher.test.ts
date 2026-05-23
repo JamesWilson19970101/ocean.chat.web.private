@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { ErrorCodes } from '@/constants/error-codes';
+import { StandardizedAppError } from '@/types/error';
 
 import { appEventBus } from '../event-bus';
 
@@ -47,7 +48,11 @@ describe('GlobalErrorDispatcher', () => {
     const emitSpy = vi.spyOn(appEventBus, 'emit');
 
     // Using a key format 'Namespace.key'
-    globalErrorDispatcher.dispatch(ErrorCodes.UNAUTHORIZED, 'Errors.authError');
+    globalErrorDispatcher.dispatch({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+      message: 'Errors.authError',
+      source: 'http',
+    });
 
     expect(mockT).toHaveBeenCalledWith('authError');
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
@@ -59,10 +64,11 @@ describe('GlobalErrorDispatcher', () => {
   it('should emit auth:logout event for UNAUTHORIZED error', () => {
     const emitSpy = vi.spyOn(appEventBus, 'emit');
 
-    globalErrorDispatcher.dispatch(
-      ErrorCodes.UNAUTHORIZED,
-      'Unauthorized message',
-    );
+    globalErrorDispatcher.dispatch({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+      source: 'http',
+      message: 'Unauthorized message',
+    });
 
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -74,24 +80,30 @@ describe('GlobalErrorDispatcher', () => {
     const customHandler = vi.fn();
     const CUSTOM_CODE = 99999;
 
-    globalErrorDispatcher.register(CUSTOM_CODE, customHandler);
-    globalErrorDispatcher.dispatch(CUSTOM_CODE, 'Custom error', {
-      context: 'test',
-    });
+    const error: StandardizedAppError = {
+      errorCode: CUSTOM_CODE,
+      message: 'Custom error',
+      details: {
+        context: 'test',
+      },
+      source: 'http',
+    };
 
-    expect(customHandler).toHaveBeenCalledWith('Custom error', {
-      context: 'test',
-    });
+    globalErrorDispatcher.register(CUSTOM_CODE, customHandler);
+    globalErrorDispatcher.dispatch(error);
+
+    expect(customHandler).toHaveBeenCalledWith(error);
   });
 
   it('should fallback to default error console when window is undefined (Server environment)', () => {
     // Simulate Next.js Server Components environment
     (global as any).window = undefined;
 
-    globalErrorDispatcher.dispatch(
-      ErrorCodes.UNAUTHORIZED,
-      'Server environment error',
-    );
+    globalErrorDispatcher.dispatch({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+      source: 'http',
+      message: 'Server environment error',
+    });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       '[Server Error] Code: 10030, Msg: Server environment error',
@@ -106,7 +118,11 @@ describe('GlobalErrorDispatcher', () => {
   it('should fallback to default handler if no strategy is registered', () => {
     const UNKNOWN_CODE = 88888;
 
-    globalErrorDispatcher.dispatch(UNKNOWN_CODE, 'Unknown error occurred');
+    globalErrorDispatcher.dispatch({
+      errorCode: UNKNOWN_CODE,
+      message: 'Unknown error occurred',
+      source: 'http',
+    });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       `[Unhandled Error Toast] Code ${UNKNOWN_CODE}: Unknown error occurred`,

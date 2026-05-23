@@ -19,7 +19,7 @@ export interface MonkeyExceptionAck {
   errorCode: number;
   message: string;
   timestamp: string;
-  serverSupportedVersions?: string[];
+  serverSupportedVersions: number[];
 }
 
 /**
@@ -31,4 +31,5 @@ export interface StandardizedAppError {
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   details?: Record<string, any>;
+  source: 'http' | 'ws';
 }
