@@ -64,6 +64,7 @@
     "No": "No"
   },
   "Errors": {
+    "logoutFailed": "Logout failed, please check your network and try again",
     "unexpected": "An unexpected error occurred",
     "requestTimeout": "Request timeout",
     "networkDisconnected": "Network disconnected",
@@ -82,7 +83,8 @@
     "protocolErrorLog": "[Protocol Error]: {msg}. Triggering force update...",
     "rateLimitToast": "[Rate Limit]: {msg}",
     "unhandledErrorToast": "Code {errorCode}: {message}",
-    "unhandledServerErrorLog": "Code {errorCode}: {message}"
+    "unhandledServerErrorLog": "Code {errorCode}: {message}",
+    "refreshTokenError": "Token Refresh Error."
   },
   "Yes": "Yes",
   "No": "No"

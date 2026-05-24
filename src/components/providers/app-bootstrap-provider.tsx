@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -26,6 +26,9 @@ export function AppBootstrapProvider({
   const token = useAuthStore((state) => state.accessToken);
   const userId = useAuthStore((state) => state.user?._id);
 
+  const [isRestoring, setIsRestoring] = useState(false);
+  const hasBootstrapped = useRef(false);
+
   // Sync userId to ChatStore for dynamic UI logic
   useEffect(() => {
     useChatStore.getState().setCurrentUserId(userId ?? null);
@@ -40,14 +43,37 @@ export function AppBootstrapProvider({
     appEventBus.setTranslator(translator);
   }, [t]);
 
-  // Attempt silent refresh on boot if token is missing
   useEffect(() => {
-    if (!useAuthStore.getState().accessToken) {
-      httpClient.post(API_ROUTES.AUTH.REFRESH).catch(() => {
-        console.log(t('silentRefreshFailed'));
-      });
+    const isAuthRoute = AUTH_ROUTES.some(
+      (route) => pathname === route || pathname.startsWith(`${route}/`),
+    );
+
+    // Scenario: No token is in memory, but the user attempts to access a protected page, and this occurs immediately after the application starts/refreshes.
+    if (!token && !isAuthRoute && !hasBootstrapped.current) {
+      setIsRestoring(true); // Blocking page rendering
+
+      httpClient
+        .post(API_ROUTES.AUTH.REFRESH, {}, { skipGlobalErrorHandler: true })
+        .then((res) => {
+          // Successfully retrieved the access token and stored it in memory.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const newAccessToken = (res.data as any).accessToken;
+          useAuthStore.getState().setAccessToken(newAccessToken);
+        })
+        .catch((err) => {
+          console.error('Boot restore failed', err);
+          // If refresh also fails, clear the page and redirect back to the login page.
+          useAuthStore.getState().clearAuth();
+          router.push('/login');
+        })
+        .finally(() => {
+          hasBootstrapped.current = true;
+          setIsRestoring(false); // Allow page rendering
+        });
+    } else {
+      hasBootstrapped.current = true;
     }
-  }, []);
+  }, [pathname, token, router]);
 
   useEffect(() => {
     // Only connect if we have a token
@@ -72,16 +98,36 @@ export function AppBootstrapProvider({
 
   useEffect(() => {
     // Listen to global events
-    const unsubscribeLogout = appEventBus.on('auth:logout', () => {
+    const unsubscribeLogout = appEventBus.on('auth:logout', async (payload) => {
       console.log(t('handlingAuthLogout'));
-      // Perform UI side-effects: clear local storage/zustand states if applicable
-      // then redirect to login page if not already on an auth route
-      const isAuthRoute = AUTH_ROUTES.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`),
-      );
 
-      if (!isAuthRoute) {
-        router.push('/login');
+      try {
+        if (!payload?.force) {
+          // Send a cancellation request to the server. The server can clear the refresh_token of HttpOnly via Set-Cookie.
+          // Passing `skipGlobalErrorHandler: true` prevents an infinite loop if the token has expired.
+          await httpClient.post(
+            API_ROUTES.AUTH.LOGOUT,
+            {},
+            { skipGlobalErrorHandler: true },
+          );
+        }
+      } catch (err) {
+        toast.error('Logout API failed or session already invalid', {
+          duration: 5000,
+        });
+        // TODO: consider err stack printing
+        console.error('Logout API failed or session already invalid', err);
+      } finally {
+        // Force clean up and redirect regardless of API success or failure
+        getSocketManager()?.disconnect();
+        useAuthStore.getState().clearAuth();
+
+        const isAuthRoute = AUTH_ROUTES.some(
+          (route) => pathname === route || pathname.startsWith(`${route}/`),
+        );
+        if (!isAuthRoute) {
+          router.push('/login');
+        }
       }
     });
 
@@ -99,6 +145,19 @@ export function AppBootstrapProvider({
       unsubscribeForceUpdate();
     };
   }, [router, pathname, t]);
+
+  // TODO: Optimize loading UI
+  // During token recovery, no child components are rendered, thus completely preventing forced entry into the interface without a token.
+  if (isRestoring) {
+    return (
+      <>
+        <div className="flex h-screen w-screen items-center justify-center bg-[#F9F9F9] dark:bg-gray-900 text-gray-400">
+          Loading...
+        </div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </>
+    );
+  }
 
   return (
     <>

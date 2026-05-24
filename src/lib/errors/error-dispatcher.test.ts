@@ -55,7 +55,7 @@ describe('GlobalErrorDispatcher', () => {
     });
 
     expect(mockT).toHaveBeenCalledWith('authError');
-    expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
+    expect(emitSpy).toHaveBeenCalledWith('auth:logout', { force: true });
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining('[Auth Error]: Translated: authError'),
     );
@@ -70,7 +70,7 @@ describe('GlobalErrorDispatcher', () => {
       message: 'Unauthorized message',
     });
 
-    expect(emitSpy).toHaveBeenCalledWith('auth:logout', undefined);
+    expect(emitSpy).toHaveBeenCalledWith('auth:logout', { force: true });
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining('[Auth Error]: Unauthorized message'),
     );

@@ -76,8 +76,13 @@ httpClient.interceptors.response.use(
     ) {
       // Prevent infinite loops if the refresh endpoint itself returns 401
       if (originalRequest.url === API_ROUTES.AUTH.REFRESH) {
-        useAuthStore.getState().clearAuth();
-        appEventBus.emit('auth:logout', undefined);
+        if (!originalRequest.skipGlobalErrorHandler) {
+          globalErrorDispatcher.dispatch({
+            errorCode: ErrorCodes.UNAUTHORIZED,
+            message: 'Errors.authError',
+            source: 'http',
+          });
+        }
         return Promise.reject(error);
       }
 
@@ -100,6 +105,7 @@ httpClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
+      // Retry based on whether the error returned by the backend contains the isRetriable field.
       try {
         // The refresh token is an HttpOnly cookie, so we don't need to pass it explicitly in the body,
         // but we must ensure credentials (cookies) are sent.
@@ -125,8 +131,11 @@ httpClient.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed (e.g., refresh token expired)
         processQueue(refreshError, null);
-        useAuthStore.getState().clearAuth();
-        appEventBus.emit('auth:logout', undefined);
+        globalErrorDispatcher.dispatch({
+          errorCode: ErrorCodes.TOKEN_REVOKED,
+          message: 'Errors.refreshTokenError',
+          source: 'http',
+        });
 
         // Let the normal error dispatcher handle the final rejection
       } finally {

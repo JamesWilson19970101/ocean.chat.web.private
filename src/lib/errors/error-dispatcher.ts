@@ -123,7 +123,7 @@ class GlobalErrorDispatcher {
       );
       toast.error(logMsg);
       console.error(logMsg);
-      appEventBus.emit('auth:logout', undefined);
+      appEventBus.emit('auth:logout', { force: true });
     };
 
     this.register(ErrorCodes.UNAUTHORIZED, authErrorHandler);

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 
 import { Search, Plus, Settings, User, Users, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { CreateDirectChatModal } from '@/components/chat/create-direct-chat-modal';
@@ -32,21 +31,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { appEventBus } from '@/lib/event-bus';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export function SidebarHeader() {
   const t = useTranslations('Chat');
-  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const [isDirectModalOpen, setIsDirectModalOpen] = useState(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  const handleLogout = () => {
-    // TODO: 在这里执行退出登录的实际逻辑，如清理 Auth Token、重置 store 状态等
-    // useAuthStore.getState().logout();
+  const handleLogout = async () => {
+    appEventBus.emit('auth:logout', { force: false });
     setIsLogoutModalOpen(false);
-    router.push('/login');
   };
 
   return (
