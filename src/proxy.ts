@@ -12,7 +12,19 @@ import { PROTECTED_ROUTES, AUTH_ROUTES, ROUTES } from './constants/routes';
  * 4. i18n is handled via cookies/headers in the application layout, not URL prefixes.
  */
 export default async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+
+  // 0. Emergency Session Clear (Frontend fallback to clear HttpOnly cookie)
+  // Prevents infinite redirect loop when the DB is dropped but browser still has the cookie.
+  if (searchParams.get('clear_session') === '1') {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete('clear_session');
+    const response = NextResponse.redirect(url);
+    if (request.cookies.has('refresh_token')) {
+      response.cookies.delete('refresh_token');
+    }
+    return response;
+  }
 
   // 1. Auth Logic
   // I use 'refresh_token' as indicator of a valid session (set by backend).

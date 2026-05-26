@@ -19,11 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { API_ROUTES } from '@/constants/api-routes';
-import { httpClient } from '@/services/http/client';
+import { authService } from '@/services/http/auth';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useConnectionStore } from '@/store/useConnectionStore';
-import { LoginResponse } from '@/types/auth';
 
 export function LoginForm() {
   const t = useTranslations('Auth');
@@ -49,13 +47,15 @@ export function LoginForm() {
 
     try {
       const deviceId = useAuthStore.getState().deviceId;
-      const response = await httpClient.post<LoginResponse>(
-        API_ROUTES.AUTH.LOGIN,
-        { username: values.username, password: values.password, deviceId },
-        { skipGlobalErrorHandler: true },
-      );
+      const response = await authService.login({
+        username: values.username,
+        password: values.password,
+        deviceId,
+      });
 
-      const { accessToken, user } = response.data;
+      console.log('response is: ', response);
+
+      const { accessToken, user } = response;
       useAuthStore.getState().setAuth(accessToken, user);
 
       await new Promise<void>((resolve, reject) => {
@@ -75,13 +75,20 @@ export function LoginForm() {
       });
 
       router.push('/chat');
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : '';
-      const isWsError = errorMessage.includes('WebSocket');
-      const message = isWsError ? t('wsConnectionFailed') : t('loginFailed');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message
+        ? error.response.data.message
+        : error instanceof Error
+          ? error.message
+          : '';
 
-      setGlobalError(message);
-      console.error(message, error);
+      const isWsError = errorMessage.includes('WebSocket');
+      const message = isWsError
+        ? t('wsConnectionFailed')
+        : errorMessage || t('loginFailed');
+
+      console.log(message);
 
       if (isWsError) useAuthStore.getState().clearAuth();
     } finally {

@@ -7,7 +7,6 @@ import axios, {
 import { API_ROUTES } from '@/constants/api-routes';
 import { ErrorCodes } from '@/constants/error-codes';
 import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
-import { appEventBus } from '@/lib/event-bus';
 import { useAuthStore } from '@/store/useAuthStore';
 import { RefreshTokenResponse } from '@/types/auth';
 import { BackendErrorResponse } from '@/types/error';
@@ -75,9 +74,19 @@ httpClient.interceptors.response.use(
       !originalRequest._retry
     ) {
       // Prevent infinite loops if the refresh endpoint itself returns 401
-      if (originalRequest.url === API_ROUTES.AUTH.REFRESH) {
+      if (
+        originalRequest.url === API_ROUTES.AUTH.REFRESH ||
+        originalRequest.url === API_ROUTES.AUTH.LOGIN
+      ) {
         if (!originalRequest.skipGlobalErrorHandler) {
           globalErrorDispatcher.dispatch({
+            // TODO: The logic of refresh token is wrong,
+            // The decision to refresh the field needs to be made later based on the `isRetriable` field returned by the backend and the specific code.
+            // Currently, this situation is unsolvable: after a user successfully registers and logs in, the administrator deletes the database,
+            // but the user's `refresh_token` is still retained on the front end. This prevents the user from accessing the login page.
+            // Ideally, the user should be able to re-register through the login page.
+            // I'll leave this logic unchanged for now.
+            // I'll modify it after I refactor the error fields returned by the backend, and I'll also need to add a silent re-reset mechanism.
             errorCode: ErrorCodes.UNAUTHORIZED,
             message: 'Errors.authError',
             source: 'http',
@@ -107,8 +116,8 @@ httpClient.interceptors.response.use(
 
       // Retry based on whether the error returned by the backend contains the isRetriable field.
       try {
-        // The refresh token is an HttpOnly cookie, so we don't need to pass it explicitly in the body,
-        // but we must ensure credentials (cookies) are sent.
+        // The refresh token is an HttpOnly cookie, so I don't need to pass it explicitly in the body,
+        // but I must ensure credentials (cookies) are sent.
         const response = await axios.post<RefreshTokenResponse>(
           `${httpClient.defaults.baseURL}${API_ROUTES.AUTH.REFRESH}`,
           {},
@@ -143,7 +152,7 @@ httpClient.interceptors.response.use(
       }
     }
 
-    // Check if we have a structured backend error response
+    // Check if I have a structured backend error response
     if (
       error.response &&
       error.response.data &&

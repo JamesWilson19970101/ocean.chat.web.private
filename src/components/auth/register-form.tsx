@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { v7 as uuidv7 } from 'uuid';
 import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -20,8 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { API_ROUTES } from '@/constants/api-routes';
-import { httpClient } from '@/services/http/client';
+import { authService } from '@/services/http/auth';
 import { RegisterRequest } from '@/types/auth';
 
 export function RegisterForm() {
@@ -53,26 +51,21 @@ export function RegisterForm() {
     setGlobalError(null);
 
     try {
-      const idempotencyKey = uuidv7();
-      await httpClient.post<unknown, unknown, RegisterRequest>(
-        API_ROUTES.AUTH.REGISTER,
-        {
-          username: values.username,
-          password: values.password,
-          confirmPassword: values.confirmPassword,
-        },
-        {
-          headers: { 'Idempotency-Key': idempotencyKey },
-          skipGlobalErrorHandler: true,
-        },
-      );
+      await authService.register({
+        username: values.username,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+      });
 
       router.push('/login');
-    } catch (error: unknown) {
-      console.error('Registration failed:', error);
-      setGlobalError(
-        t('registrationFailed') || 'Registration failed. Please try again.',
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message
+        ? error.response.data.message
+        : error instanceof Error
+          ? error.message
+          : '';
+      console.log(errorMessage);
     } finally {
       setIsLoading(false);
     }
