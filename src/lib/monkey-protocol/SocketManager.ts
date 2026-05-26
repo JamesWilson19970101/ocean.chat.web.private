@@ -1,3 +1,5 @@
+import { toast } from 'react-hot-toast';
+
 import { ErrorCodes } from '@/constants/error-codes';
 import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
 import { useChatStore } from '@/store/useChatStore';
@@ -229,6 +231,39 @@ export class SocketManager {
       }
       return Promise.resolve();
     }
+  }
+
+  /**
+   * Re-authenticates an active WebSocket connection with a new JWT token.
+   * This is useful for long-lived connections where the access token might expire,
+   * allowing seamless re-authentication without dropping the socket.
+   *
+   * @public
+   */
+  public async reauthenticate() {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const jwt = await this.options.jwt();
+    if (!jwt) return;
+
+    const authReqObj: oceanchat.monkey.AuthReq.$Properties = {
+      jwt,
+      deviceId: this.options.deviceId,
+      deviceType: this.options.deviceType,
+      supportedVersions: this.supportedVersions,
+    };
+
+    const payload = oceanchat.monkey.AuthReq.encode(authReqObj).finish();
+
+    this.sendRawFrame({
+      cmd: Cmd.AUTH_REQ,
+      flags: Flags.REQUIRE_ACK,
+      reqId: this.generateInternalReqId(),
+      length: payload.length,
+      payload,
+    });
   }
 
   /**
@@ -493,11 +528,12 @@ export class SocketManager {
       if (decoded.errorCode === ErrorCode.UNAUTHORIZED) {
         this.isIntentionalClose = true;
         this.cleanup();
-        globalErrorDispatcher.dispatch({
-          errorCode: ErrorCode.UNAUTHORIZED,
-          message: decoded.message ?? 'Unauthorized',
-          source: 'ws',
-        });
+        useConnectionStore
+          .getState()
+          .setFailed(new Error(decoded.message ?? 'Unauthorized'));
+        toast.error(
+          'WebSocket connection unauthorized, please try again later.',
+        );
         return;
       }
 

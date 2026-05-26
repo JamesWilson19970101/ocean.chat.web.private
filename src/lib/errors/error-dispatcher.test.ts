@@ -39,8 +39,7 @@ describe('GlobalErrorDispatcher', () => {
   it('should resolve i18n keys when a translator is provided', () => {
     const mockT = vi.fn((key, values) => {
       if (key === 'authError') return 'Translated: authError';
-      if (key === 'authErrorLog')
-        return `[Auth Error]: ${values.msg}. Triggering logout...`;
+      if (key === 'authErrorLog') return `${values.msg}. Triggering logout...`;
       return `Translated: ${key}`;
     });
     globalErrorDispatcher.setTranslator(mockT);
@@ -57,7 +56,7 @@ describe('GlobalErrorDispatcher', () => {
     expect(mockT).toHaveBeenCalledWith('authError');
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', { force: true });
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[Auth Error]: Translated: authError'),
+      expect.stringContaining('Translated: authError'),
     );
   });
 
@@ -72,7 +71,7 @@ describe('GlobalErrorDispatcher', () => {
 
     expect(emitSpy).toHaveBeenCalledWith('auth:logout', { force: true });
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[Auth Error]: Unauthorized message'),
+      expect.stringContaining('Unauthorized message'),
     );
   });
 
@@ -106,7 +105,7 @@ describe('GlobalErrorDispatcher', () => {
     });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      '[Server Error] Code: 10030, Msg: Server environment error',
+      'Code: 10030, Msg: Server environment error',
       undefined,
     );
 

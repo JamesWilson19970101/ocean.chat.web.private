@@ -95,7 +95,7 @@ class GlobalErrorDispatcher {
     if (typeof window === 'undefined') {
       const logMsg = this.t(
         'serverErrorLog',
-        '[Server Error] Code: {errorCode}, Msg: {message}',
+        'Code: {errorCode}, Msg: {message}',
         { errorCode: resolvedError.errorCode, message: resolvedError.message },
       );
       console.error(logMsg, resolvedError.details);
@@ -116,11 +116,9 @@ class GlobalErrorDispatcher {
   private registerDefaultStrategies(): void {
     // 401 Unauthorized / Token Revoked -> Trigger Global Logout
     const authErrorHandler: ErrorHandlerFn = (error) => {
-      const logMsg = this.t(
-        'authErrorLog',
-        '[Auth Error]: {msg}. Triggering logout...',
-        { msg: error.message },
-      );
+      const logMsg = this.t('authErrorLog', '{msg}', {
+        msg: error.message,
+      });
       toast.error(logMsg);
       console.error(logMsg);
       appEventBus.emit('auth:logout', { force: true });
@@ -134,7 +132,7 @@ class GlobalErrorDispatcher {
     this.register(426, (error) => {
       const logMsg = this.t(
         'protocolErrorLog',
-        '[Protocol Error]: {msg}. Triggering force update...',
+        '{msg}. Triggering force update...',
         { msg: error.message },
       );
       console.error(logMsg);
@@ -159,7 +157,7 @@ class GlobalErrorDispatcher {
     if (typeof window !== 'undefined') {
       const logMsg = this.t(
         'unhandledErrorToast',
-        '[Unhandled Error Toast] Code {errorCode}: {message}',
+        'Code {errorCode}: {message}',
         { errorCode: error.errorCode, message: error.message },
       );
       toast.error(logMsg);
@@ -167,7 +165,7 @@ class GlobalErrorDispatcher {
     } else {
       const logMsg = this.t(
         'unhandledServerErrorLog',
-        '[Unhandled Server Error] Code {errorCode}: {message}',
+        'Code {errorCode}: {message}',
         { errorCode: error.errorCode, message: error.message },
       );
       console.error(logMsg, error.details);
