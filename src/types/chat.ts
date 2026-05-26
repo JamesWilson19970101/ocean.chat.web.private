@@ -23,3 +23,15 @@ export interface Message {
   fileSize?: string;
   sendStatus?: 'SENDING' | 'SENT' | 'FAILED';
 }
+
+export interface CreateRoomDto {
+  type: 'p' | 'c' | 'd';
+  name: string;
+  members: string[];
+}
+
+export interface CreateRoomResponse {
+  groupId: string;
+  name: string;
+  type: string;
+}
