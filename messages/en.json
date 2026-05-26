@@ -53,7 +53,11 @@
     "userNotFound": "Can't find user.",
     "searchUser": "Search user name...",
     "Yes": "Yes",
-    "No": "No"
+    "No": "No",
+    "createSuccess": "Direct chat created successfully!",
+    "creating": "Creating...",
+    "loadingUsers": "Loading users...",
+    "loadUsersFailed": "Failed to load users"
   },
   "PrivateGroup": {
     "hasSelected": "You have selected: ",
@@ -61,7 +65,13 @@
     "searchUser": "Search user name...",
     "new": "Private Group",
     "Yes": "Yes",
-    "No": "No"
+    "No": "No",
+    "groupName": "Group Name",
+    "groupNamePlaceholder": "Enter group name",
+    "createSuccess": "Group created successfully!",
+    "creating": "Creating...",
+    "loadingUsers": "Loading users...",
+    "loadUsersFailed": "Failed to load users"
   },
   "Errors": {
     "logoutFailed": "Logout failed, please check your network and try again",
@@ -77,11 +87,11 @@
     "cleaningUpWebSocket": "AppBootstrapProvider: Cleaning up WebSocket connection",
     "handlingAuthLogout": "AppBootstrapProvider: Handling auth:logout event",
     "handlingProtocolMismatch": "AppBootstrapProvider: Handling protocol:force-update event (Protocol Mismatch)",
-    "serverErrorLog": "[Server Error] Code: {errorCode}, Msg: {message}",
+    "serverErrorLog": "Code: {errorCode}, Msg: {message}",
     "eventBusHandlerError": "Error in event handler for {event}:",
-    "authErrorLog": "[Auth Error]: {msg}. Triggering logout...",
-    "protocolErrorLog": "[Protocol Error]: {msg}. Triggering force update...",
-    "rateLimitToast": "[Rate Limit]: {msg}",
+    "authErrorLog": "{msg}",
+    "protocolErrorLog": "{msg}. Triggering force update...",
+    "rateLimitToast": "{msg}",
     "unhandledErrorToast": "Code {errorCode}: {message}",
     "unhandledServerErrorLog": "Code {errorCode}: {message}",
     "refreshTokenError": "Token Refresh Error."

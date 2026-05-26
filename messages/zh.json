@@ -53,7 +53,11 @@
     "userNotFound": "未找到联系人",
     "searchUser": "搜索联系人名称...",
     "Yes": "确定",
-    "No": "取消"
+    "No": "取消",
+    "createSuccess": "单聊创建成功！",
+    "creating": "创建中...",
+    "loadingUsers": "正在加载联系人...",
+    "loadUsersFailed": "加载联系人失败"
   },
   "PrivateGroup": {
     "hasSelected": "已选择人数：",
@@ -61,7 +65,13 @@
     "searchUser": "搜索联系人名称...",
     "new": "新建私密群组",
     "Yes": "确定",
-    "No": "取消"
+    "No": "取消",
+    "groupName": "群组名称",
+    "groupNamePlaceholder": "请输入群组名称",
+    "createSuccess": "群组创建成功！",
+    "creating": "创建中...",
+    "loadingUsers": "正在加载联系人...",
+    "loadUsersFailed": "加载联系人失败"
   },
   "Errors": {
     "logoutFailed": "退出登录失败，请检查网络后重试",
@@ -72,17 +82,17 @@
     "wsHandshakeTimeout": "WebSocket 握手超时。需要重新进行身份验证。",
     "wsConnectionFailed": "无法连接到聊天服务器。",
     "rateLimitExceeded": "请求过于频繁。请稍后再试。",
-    "authError": "身份验证错误",
+    "authError": "鉴权失败",
     "protocolMismatch": "协议版本不匹配，请更新您的客户端。",
     "silentRefreshFailed": "AppBootstrapProvider: 后台静默刷新失败或不适用。正在等待手动登录。",
     "cleaningUpWebSocket": "AppBootstrapProvider: 正在清理 WebSocket 连接",
     "handlingAuthLogout": "AppBootstrapProvider: 正在处理 auth:logout 注销事件",
     "handlingProtocolMismatch": "AppBootstrapProvider: 正在处理 protocol:force-update 强制更新事件（协议不匹配）",
-    "serverErrorLog": "[Server Error] 状态码: {errorCode}, 消息: {message}",
+    "serverErrorLog": "状态码: {errorCode}, 消息: {message}",
     "eventBusHandlerError": "{event} 事件处理程序出错：",
-    "authErrorLog": "[Auth Error]: {msg}。正在触发注销...",
-    "protocolErrorLog": "[Protocol Error]: {msg}。正在触发强制更新...",
-    "rateLimitToast": "[Rate Limit]: {msg}",
+    "authErrorLog": "{msg}",
+    "protocolErrorLog": "{msg}。正在触发强制更新...",
+    "rateLimitToast": "{msg}",
     "unhandledErrorToast": "状态码 {errorCode}: {message}",
     "unhandledServerErrorLog": "状态码 {errorCode}: {message}",
     "refreshTokenError": "Token 刷新出错。"
