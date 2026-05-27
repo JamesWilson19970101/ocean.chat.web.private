@@ -16,5 +16,6 @@ export const API_ROUTES = {
   },
   GROUPS: {
     CREATE: '/api/groups/create',
+    LIST: '/api/groups/list',
   },
 } as const;
