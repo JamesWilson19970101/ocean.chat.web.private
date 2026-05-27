@@ -1,25 +1,30 @@
-import React from 'react';
+'use client';
 
-import { getTranslations } from 'next-intl/server';
+import React, { use } from 'react';
+
+import { useTranslations } from 'next-intl';
 
 import ChatHeader from '@/components/chat/chat-header';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessages } from '@/components/chat/chat-messages';
 import { Separator } from '@/components/ui/separator';
-import { getMockMessages, mockRooms } from '@/lib/mock-data';
+import { getMockMessages } from '@/lib/mock-data';
+import { useRoomStore } from '@/store/useRoomStore';
 
 interface ChatRoomProps {
   params: Promise<{ roomId: string }>;
 }
 
-export default async function ChatRoom({ params }: ChatRoomProps) {
-  const { roomId } = await params;
-  const t = await getTranslations('ChatRoom');
+export default function ChatRoom({ params }: ChatRoomProps) {
+  const { roomId } = use(params);
+  const t = useTranslations('ChatRoom');
 
   // TODO: Use Redis store recent messages.
   // Simulate server-side fetch
   const messages = getMockMessages(roomId);
-  const room = mockRooms.find((r) => r.id === roomId);
+  
+  const rooms = useRoomStore((state) => state.rooms);
+  const room = rooms.find((r) => r.id === roomId);
 
   if (!room) {
     return (

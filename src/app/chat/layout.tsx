@@ -8,8 +8,8 @@ import { AppLogo } from '@/components/chat/app-logo';
 import { RoomList } from '@/components/chat/room-list';
 import { SidebarHeader } from '@/components/chat/sidebar-header';
 import { Separator } from '@/components/ui/separator';
-import { mockRooms } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
+import { useRoomStore } from '@/store/useRoomStore';
 
 export default function ChatLayout({
   children,
@@ -19,8 +19,7 @@ export default function ChatLayout({
   const params = useParams();
   const isChatOpen = !!params?.roomId;
 
-  // Simulate server-side fetch if needed
-  const rooms = mockRooms;
+  const rooms = useRoomStore((state) => state.rooms);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
