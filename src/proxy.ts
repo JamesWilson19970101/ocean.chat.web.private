@@ -14,7 +14,7 @@ import { PROTECTED_ROUTES, AUTH_ROUTES, ROUTES } from './constants/routes';
 export default async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
-  // 0. Emergency Session Clear (Frontend fallback to clear HttpOnly cookie)
+  // Emergency Session Clear (Frontend fallback to clear HttpOnly cookie)
   // Prevents infinite redirect loop when the DB is dropped but browser still has the cookie.
   if (searchParams.get('clear_session') === '1') {
     const url = request.nextUrl.clone();
