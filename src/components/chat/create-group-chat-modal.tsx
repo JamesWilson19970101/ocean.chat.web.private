@@ -18,8 +18,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { chatService } from '@/services/http/chat';
+import { groupService } from '@/services/http/group';
 import { userService } from '@/services/http/user';
+import { useRoomStore } from '@/store/useRoomStore';
 import { UserProfile } from '@/types/auth';
 
 interface CreateGroupChatModalProps {
@@ -86,11 +87,28 @@ export function CreateGroupChatModal({
     if (selectedUserIds.length > 0 && groupName.trim()) {
       try {
         setIsSubmitting(true);
-        await chatService.createRoom({
+        const newRoomResponse = await groupService.createRoom({
           type: 'p',
           name: groupName.trim(),
           members: selectedUserIds,
         });
+
+        const roomExists = useRoomStore
+          .getState()
+          .rooms.some((r) => r.id === newRoomResponse.groupId);
+        if (!roomExists) {
+          useRoomStore.getState().addRoom({
+            id: newRoomResponse.groupId,
+            name: newRoomResponse.name,
+            lastMessage: '',
+            avatarUrl: '',
+            lastSeen: new Date().toISOString(),
+            unreadCount: 0,
+            active: false,
+            online: false,
+          });
+        }
+
         toast.success(t('createSuccess'));
         setSearchQuery('');
         setGroupName('');
