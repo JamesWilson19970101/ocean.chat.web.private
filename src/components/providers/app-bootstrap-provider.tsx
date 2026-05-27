@@ -11,9 +11,11 @@ import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
 import { appEventBus } from '@/lib/event-bus';
 import { initSocketManager, getSocketManager } from '@/lib/monkey-protocol';
 import { authService } from '@/services/http/auth';
+import { groupService } from '@/services/http/group';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
 import { useConnectionStore } from '@/store/useConnectionStore';
+import { useRoomStore } from '@/store/useRoomStore';
 
 export function AppBootstrapProvider({
   children,
@@ -114,6 +116,29 @@ export function AppBootstrapProvider({
   }, [token]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
+    groupService
+      .getGroups()
+      .then((groups) => {
+        const mappedRooms = groups.map((group) => ({
+          id: group.groupId,
+          name: group.name,
+          lastMessage: '',
+          avatarUrl: '',
+          lastSeen: new Date().toISOString(),
+          unreadCount: 0,
+          active: false,
+          online: false,
+        }));
+        useRoomStore.getState().setRooms(mappedRooms);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch groups:', err);
+      });
+  }, [isAuthenticated]);
+
+  useEffect(() => {
     // Only connect if the user is authenticated
     if (!isAuthenticated) return;
 
@@ -155,6 +180,7 @@ export function AppBootstrapProvider({
         // Force clean up and redirect regardless of API success or failure
         getSocketManager()?.disconnect();
         useAuthStore.getState().clearAuth();
+        useRoomStore.getState().clearRooms();
 
         // Always redirect to login with the clear_session flag to guarantee the HttpOnly cookie is removed by middleware
         router.push('/login?clear_session=1');
