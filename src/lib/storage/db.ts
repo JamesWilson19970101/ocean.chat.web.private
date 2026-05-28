@@ -141,22 +141,35 @@ class StorageManager {
     await tx.done;
   }
 
+  // TODO: getMaxGlobalSyncSeqId Incremental updates when first entering the chat interface
   /**
-   * Retrieves the maximum sync_seq_id from the local database.
-   * Used as the cursor for HTTP incremental sync (MaxLocalSyncSeqId).
+   * Retrieves the maximum sync_seq_id from the local database for a specific group.
+   * Used as the cursor for HTTP incremental sync (MaxLocalSyncSeqId) per room.
    */
-  async getMaxLocalSyncSeqId(): Promise<number> {
+  async getMaxLocalSyncSeqIdByGroupId(groupId: string): Promise<number> {
     const db = await this.getDB();
     if (!db) return 0;
 
     // Open a readonly transaction
     const tx = db.transaction('messages', 'readonly');
     const store = tx.objectStore('messages');
-    const index = store.index('by-sync-seq');
 
-    // Open cursor in descending order to get the highest sequence ID
-    const cursor = await index.openCursor(null, 'prev');
-    return cursor?.value.sync_seq_id ?? 0;
+    // Using the 'by-group' index to get all messages for the group
+    // In IndexedDB, if we want max sync_seq_id, we either need a compound index [group_id, sync_seq_id]
+    // or we fetch all and find the max. For client side, fetching all for a single group and finding max is fast enough
+    // before we introduce full virtualization.
+    const messages = await store.index('by-group').getAll(groupId);
+
+    if (messages.length === 0) return 0;
+
+    let maxId = 0;
+    for (const msg of messages) {
+      if (msg.sync_seq_id && msg.sync_seq_id > maxId) {
+        maxId = msg.sync_seq_id;
+      }
+    }
+
+    return maxId;
   }
 
   /**

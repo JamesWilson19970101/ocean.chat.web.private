@@ -1,5 +1,6 @@
 import { API_ROUTES } from '@/constants/api-routes';
 import { httpClient } from '@/services/http/client';
+import { useRoomStore } from '@/store/useRoomStore';
 
 import { ChatMessage, localDB } from '../storage/db';
 
@@ -18,11 +19,11 @@ export class SyncEngine {
    */
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   /**
-   * The highest `syncSeqId` received from incoming notifications.
-   * Used to determine if a fetch from the server is necessary.
+   * Tracks the highest `syncSeqId` received from incoming notifications per group.
+   * Used to determine if a fetch from the server is necessary for a given group.
    * @private
    */
-  private pendingMaxSeqId: bigint = BigInt(0);
+  private pendingMaxSeqIds: Map<string, bigint> = new Map();
   /**
    * Flag indicating whether a synchronization process is currently active.
    * @private
@@ -46,7 +47,7 @@ export class SyncEngine {
   /**
    * Processes an incoming `MSG_NOTIFY` push frame from the `SocketManager`.
    *
-   * Updates the `pendingMaxSeqId` and schedules a synchronization process.
+   * Updates the `pendingMaxSeqIds` and schedules a synchronization process.
    * Uses a 200ms debounce window to micro-batch notifications.
    *
    * @param notify - The notification payload containing the latest `syncSeqId` from the server.
@@ -54,8 +55,16 @@ export class SyncEngine {
    */
   public handleNotify(notify: oceanchat.monkey.MsgNotify) {
     const incomingSeqId = BigInt(notify.syncSeqId?.toString() ?? '0');
-    if (incomingSeqId > this.pendingMaxSeqId) {
-      this.pendingMaxSeqId = incomingSeqId;
+    const groupId = notify.groupId;
+
+    if (!groupId) {
+      console.warn('[SyncEngine] Received MSG_NOTIFY without groupId');
+      return;
+    }
+
+    const currentMax = this.pendingMaxSeqIds.get(groupId) ?? BigInt(0);
+    if (incomingSeqId > currentMax) {
+      this.pendingMaxSeqIds.set(groupId, incomingSeqId);
     }
 
     if (!this.debounceTimer) {
@@ -69,15 +78,16 @@ export class SyncEngine {
   /**
    * Initiates the synchronization process.
    *
-   * Compares the local maximum sequence ID with the pending target. If the local state
+   * Compares the local maximum sequence ID with the pending target per group. If the local state
    * is outdated, it fetches the missing messages from the HTTP API, processes them through
    * the local database, and fires the `onSyncComplete` callback.
    * This method is also useful to call manually when reconnecting (e.g., after `AUTH_ACK`).
    *
+   * @param targetGroupId - Optional. If provided, only syncs the specified group. Otherwise syncs all pending groups.
    * @public
    * @returns A Promise that resolves when the synchronization process is complete.
    */
-  public async triggerSync() {
+  public async triggerSync(targetGroupId?: string) {
     if (this.isSyncing) {
       this.hasPendingSync = true;
       return;
@@ -86,42 +96,58 @@ export class SyncEngine {
     this.hasPendingSync = false;
 
     try {
-      const maxLocal = BigInt(await localDB.getMaxLocalSyncSeqId());
+      // 获取当前用户正在浏览的群组 ID
+      const activeRoomId = useRoomStore.getState().activeRoomId;
 
-      // If we have a pending target and we already have it, skip
-      if (
-        this.pendingMaxSeqId > BigInt(0) &&
-        maxLocal >= this.pendingMaxSeqId
-      ) {
-        return;
-      }
-
-      // Fetch incremental messages from API
-      // The API should return messages strictly greater than maxLocal
-      const response = await httpClient.get<ChatMessage[]>(
-        API_ROUTES.MESSAGES.SYNC,
-        {
-          params: { seqId: maxLocal.toString() },
-        },
-      );
-
-      const newMessages = response.data;
-      if (!newMessages || newMessages.length === 0) {
-        return;
-      }
-
-      // Offload read-modify-write loops into a single DB transaction for extreme performance
-      const verifiedMessages =
-        await localDB.processSyncMessagesBatch(newMessages);
-
-      // Notify the application layer (Zustand/React)
-      if (verifiedMessages.length > 0) {
-        if (this.onSyncComplete) {
-          this.onSyncComplete(verifiedMessages);
-        } else {
-          console.warn(
-            '[SyncEngine] Synced new messages, but no onSyncComplete handler is registered.',
+      const groupsToSync = targetGroupId
+        ? [targetGroupId]
+        : Array.from(this.pendingMaxSeqIds.keys()).filter(
+            (id) => id === activeRoomId,
           );
+
+      for (const groupId of groupsToSync) {
+        const maxLocal = BigInt(
+          await localDB.getMaxLocalSyncSeqIdByGroupId(groupId),
+        );
+        const pendingMax = this.pendingMaxSeqIds.get(groupId) ?? BigInt(0);
+
+        // If we have a pending target and we already have it, skip
+        if (pendingMax > BigInt(0) && maxLocal >= pendingMax) {
+          this.pendingMaxSeqIds.delete(groupId);
+          continue;
+        }
+
+        // Fetch incremental messages from API
+        // The API should return messages strictly greater than maxLocal for this group
+        const response = await httpClient.get<ChatMessage[]>(
+          API_ROUTES.MESSAGES.SYNC,
+          {
+            params: { syncSeqId: maxLocal.toString(), groupId },
+          },
+        );
+
+        const newMessages = response.data.messages;
+
+        // Remove from pending map regardless of result to avoid infinite sync loops if backend is empty
+        this.pendingMaxSeqIds.delete(groupId);
+
+        if (!newMessages || newMessages.length === 0) {
+          continue;
+        }
+        console.log('newMessages is: ', newMessages);
+        // Offload read-modify-write loops into a single DB transaction for extreme performance
+        const verifiedMessages =
+          await localDB.processSyncMessagesBatch(newMessages);
+
+        // Notify the application layer (Zustand/React)
+        if (verifiedMessages.length > 0) {
+          if (this.onSyncComplete) {
+            this.onSyncComplete(verifiedMessages);
+          } else {
+            console.warn(
+              '[SyncEngine] Synced new messages, but no onSyncComplete handler is registered.',
+            );
+          }
         }
       }
     } catch (error) {

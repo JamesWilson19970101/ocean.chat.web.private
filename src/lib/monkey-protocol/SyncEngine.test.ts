@@ -11,7 +11,7 @@ import { SyncEngine } from './SyncEngine';
 // Mock dependencies
 vi.mock('../storage/db', () => ({
   localDB: {
-    getMaxLocalSyncSeqId: vi.fn(),
+    getMaxLocalSyncSeqIdByGroupId: vi.fn(),
     processSyncMessagesBatch: vi.fn(),
   },
 }));
@@ -56,7 +56,7 @@ describe('SyncEngine (Pure Logic)', () => {
   });
 
   it('should pull messages and process them via batch transaction', async () => {
-    vi.mocked(localDB.getMaxLocalSyncSeqId).mockResolvedValue(1000);
+    vi.mocked(localDB.getMaxLocalSyncSeqIdByGroupId).mockResolvedValue(1000);
 
     const mockMessages = [
       { client_msg_id: 'msg-1', sync_seq_id: 1001, content: 'Hello' },
@@ -71,7 +71,7 @@ describe('SyncEngine (Pure Logic)', () => {
     const onSyncComplete = vi.fn();
     engine.onSyncComplete = onSyncComplete;
 
-    await engine.triggerSync();
+    await engine.triggerSync('g1');
 
     // Verify batch processing was used
     expect(localDB.processSyncMessagesBatch).toHaveBeenCalledWith(mockMessages);
