@@ -4,6 +4,7 @@ import { ErrorCodes } from '@/constants/error-codes';
 import { globalErrorDispatcher } from '@/lib/errors/error-dispatcher';
 import { useChatStore } from '@/store/useChatStore';
 import { useConnectionStore } from '@/store/useConnectionStore';
+import { useRoomStore } from '@/store/useRoomStore';
 
 import { Cmd, CURRENT_VERSION, ErrorCode, Flags } from './constants';
 import { FrameDecoder, FrameEncoder, MonkeyFrame } from './frame';
@@ -75,9 +76,20 @@ export class SocketManager {
     this.inFlightQueue = new InFlightQueue();
     this.syncEngine = new SyncEngine();
 
-    // Wire SyncEngine to ChatStore
+    // Wire SyncEngine to ChatStore and RoomStore
     this.syncEngine.onSyncComplete = (newMessages) => {
       useChatStore.getState().appendMessages(newMessages);
+
+      // Extract unique group IDs from new messages
+      const groupIds = new Set(newMessages.map((m) => m.group_id));
+      
+      const activeRoomId = useRoomStore.getState().activeRoomId;
+
+      groupIds.forEach((groupId) => {
+        // Increment unread count if we are NOT currently looking at this room
+        const isNotActiveRoom = groupId !== activeRoomId;
+        useRoomStore.getState().updateRoomActivity(groupId, Date.now(), isNotActiveRoom);
+      });
     };
 
     this.heartbeat = new HeartbeatManager(
@@ -457,8 +469,11 @@ export class SocketManager {
       }
     }
 
-    // Trigger full sync to cover offline period TODO: Uncomment
-    // this.syncEngine.triggerSync();
+    // Trigger sync to cover offline period and load real historical messages for all active rooms
+    const activeRooms = useRoomStore.getState().rooms;
+    activeRooms.forEach((room) => {
+      this.syncEngine.triggerSync(room.id);
+    });
   }
 
   /**
