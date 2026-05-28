@@ -10,10 +10,9 @@ import { MessageItem } from './message-item';
 
 interface ChatMessagesProps {
   roomId: string;
-  messages: Message[];
 }
 
-export function ChatMessages({ roomId, messages: initialMessages }: ChatMessagesProps) {
+export function ChatMessages({ roomId }: ChatMessagesProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +25,7 @@ export function ChatMessages({ roomId, messages: initialMessages }: ChatMessages
   }, [roomId]);
 
   // Combine and map storeMessages to UI format
-  const mappedStoreMessages: Message[] = useMemo(() => {
+  const displayMessages: Message[] = useMemo(() => {
     return storeMessages.map(m => ({
       id: m.client_msg_id,
       sender: m.sender_id === currentUserId ? 'Me' : (m.sender_id || 'Other'),
@@ -37,11 +36,6 @@ export function ChatMessages({ roomId, messages: initialMessages }: ChatMessages
       sendStatus: m.send_status
     }));
   }, [storeMessages, currentUserId]);
-  // In a real application, you'd properly merge initialMessages from Server with Local DB messages.
-  // For the sake of the Monkey Protocol demonstration, we append the mapped store messages to the mock initial messages.
-  const displayMessages = useMemo(() => {
-    return [...initialMessages, ...mappedStoreMessages];
-  }, [initialMessages, mappedStoreMessages]);
 
   useEffect(() => {
     if (viewportRef.current) {
