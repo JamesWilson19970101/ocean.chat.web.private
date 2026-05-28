@@ -7,6 +7,7 @@ export interface Room {
   active?: boolean;
   unreadCount?: number;
   online?: boolean;
+  lastActivityTime?: number;
 }
 
 export interface Message {
