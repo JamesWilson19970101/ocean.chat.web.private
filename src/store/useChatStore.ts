@@ -12,6 +12,7 @@ interface ChatState {
   loadMessagesFromDB: (groupId: string) => Promise<void>;
   addOptimisticMessage: (msg: ChatMessage) => Promise<void>;
   markMessageFailed: (clientMsgId: string) => void;
+  markMessageSent: (clientMsgId: string, syncSeqId: number) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -94,6 +95,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set((state) => ({
       messages: state.messages.map((m) =>
         m.client_msg_id === clientMsgId ? { ...m, send_status: 'FAILED' } : m,
+      ),
+    }));
+  },
+
+  markMessageSent: async (clientMsgId: string, syncSeqId: number) => {
+    await localDB.updateMessageStatus(clientMsgId, 'SENT', syncSeqId);
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m.client_msg_id === clientMsgId
+          ? { ...m, send_status: 'SENT', sync_seq_id: syncSeqId }
+          : m,
       ),
     }));
   },

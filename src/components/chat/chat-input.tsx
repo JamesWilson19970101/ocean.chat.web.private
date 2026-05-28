@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Cmd, Flags, pb, getSocketManager } from '@/lib/monkey-protocol';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
+import { useRoomStore } from '@/store/useRoomStore';
 
 interface ChatInputProps {
   roomId: string;
@@ -59,6 +60,17 @@ export function ChatInput({ roomId }: ChatInputProps) {
             length: payload.length,
             payload,
           })
+          .then((ackPayload) => {
+            if (ackPayload) {
+              try {
+                const ack = pb.oceanchat.monkey.MsgUpAck.decode(ackPayload);
+                const syncSeqId = Number(ack.syncSeqId);
+                useChatStore.getState().markMessageSent(clientMsgId, syncSeqId);
+              } catch (decodeError) {
+                console.error('[ChatInput] Failed to decode MsgUpAck', decodeError);
+              }
+            }
+          })
           .catch((err) => {
             console.error(
               '[ChatInput] Message send rejected by socket manager',
@@ -68,6 +80,9 @@ export function ChatInput({ roomId }: ChatInputProps) {
             useChatStore.getState().markMessageFailed(clientMsgId);
           });
       }
+      
+      // 3. Automatically pop the active room to the top
+      useRoomStore.getState().updateRoomActivity(roomId, Date.now());
     }
   };
 
