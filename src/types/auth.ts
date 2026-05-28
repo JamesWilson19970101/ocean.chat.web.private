@@ -1,7 +1,4 @@
-export interface UserProfile {
-  _id: string;
-  username: string;
-}
+import { UserProfile } from './user';
 
 export interface LoginRequest {
   username: string;

@@ -2,7 +2,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-import { UserProfile } from '@/types/auth';
+import { UserProfile } from '@/types/user';
 
 interface AuthStore {
   isAuthenticated: boolean;

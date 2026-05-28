@@ -158,6 +158,7 @@ httpClient.interceptors.response.use(
       error.response.data &&
       error.response.data.errorCode
     ) {
+      // TODO:If the request fails, an error will be displayed here, pending processing.
       const { errorCode, message, details } = error.response.data;
 
       /**

@@ -7,20 +7,24 @@ import { UserProfile } from '@/types/auth';
 import { httpClient } from './client';
 
 export const userService = {
-  getAllUsers: async (
-    config?: AxiosRequestConfig,
-  ): Promise<UserProfile[]> => {
+  getAllUsers: async (config?: AxiosRequestConfig): Promise<UserProfile[]> => {
     const idempotencyKey = uuidv7();
-    const response = await httpClient.get<UserProfile[]>(
-      API_ROUTES.USERS.ALL,
-      {
-        ...config,
-        headers: {
-          ...config?.headers,
-          'idempotency-key': idempotencyKey,
-        },
+    const response = await httpClient.get<UserProfile[]>(API_ROUTES.USERS.ALL, {
+      ...config,
+      headers: {
+        ...config?.headers,
+        'idempotency-key': idempotencyKey,
       },
-    );
+    });
+    return response.data;
+  },
+  me: async (config?: AxiosRequestConfig) => {
+    const response = await httpClient.get<UserProfile>(API_ROUTES.USERS.ME, {
+      ...config,
+      headers: {
+        ...config?.headers,
+      },
+    });
     return response.data;
   },
 };

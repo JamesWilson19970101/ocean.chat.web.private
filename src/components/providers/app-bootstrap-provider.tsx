@@ -12,11 +12,13 @@ import { appEventBus } from '@/lib/event-bus';
 import { initSocketManager, getSocketManager } from '@/lib/monkey-protocol';
 import { authService } from '@/services/http/auth';
 import { groupService } from '@/services/http/group';
+import { userService } from '@/services/http/user';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
 import { useConnectionStore } from '@/store/useConnectionStore';
 import { useRoomStore } from '@/store/useRoomStore';
 
+// TODO: Optimize the code in this file
 export function AppBootstrapProvider({
   children,
 }: {
@@ -56,10 +58,12 @@ export function AppBootstrapProvider({
 
       authService
         .refresh({ skipGlobalErrorHandler: true })
-        .then((res) => {
+        .then(async (res) => {
           // Successfully retrieved the access token and stored it in memory.
           const newAccessToken = res.accessToken;
           useAuthStore.getState().setAccessToken(newAccessToken);
+          const me = await userService.me({ skipGlobalErrorHandler: true });
+          useAuthStore.getState().setAuth(newAccessToken, me);
         })
         .catch((err) => {
           console.error('Boot restore failed', err);

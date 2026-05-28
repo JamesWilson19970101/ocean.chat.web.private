@@ -10,9 +10,10 @@ export const API_ROUTES = {
   },
   USERS: {
     ALL: '/api/users/all',
+    ME: '/api/users/me',
   },
   MESSAGES: {
-    SYNC: '/v1/messages/sync',
+    SYNC: '/api/messages/sync',
   },
   GROUPS: {
     CREATE: '/api/groups/create',
